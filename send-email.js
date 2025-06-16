@@ -5,7 +5,8 @@ async function sendEmail() {
   try {
     console.log('📧 메일 발송 시작...');
     
-    const transporter = nodemailer.createTransporter({
+    // ✅ 올바른 메서드명: createTransport
+    const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
         user: process.env.GMAIL_USER,
