@@ -1,22 +1,32 @@
-{
-  "name": "creative-maru-email-automation",
-  "version": "1.0.0",
-  "description": "크리에이티브마루 지원사업 자동 메일링 시스템",
-  "main": "send-email.js",
-  "scripts": {
-    "start": "node send-email.js",
-    "test": "node send-email.js"
-  },
-  "dependencies": {
-    "googleapis": "^118.0.0",
-    "nodemailer": "^6.9.3"
-  },
-  "keywords": [
-    "gmail-api",
-    "nodemailer", 
-    "automation",
-    "email"
-  ],
-  "author": "크리에이티브마루",
-  "license": "MIT"
-}
+# .github/workflows/send-email.yml
+name: 크리에이티브마루 지원사업 메일링
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  send-email:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: Install dependencies
+      run: |
+        npm install googleapis nodemailer
+        
+    - name: Send Email Report
+      env:
+        GMAIL_CLIENT_ID: ${{ secrets.GMAIL_CLIENT_ID }}
+        GMAIL_CLIENT_SECRET: ${{ secrets.GMAIL_CLIENT_SECRET }}
+        GMAIL_REFRESH_TOKEN: ${{ secrets.GMAIL_REFRESH_TOKEN }}
+        GMAIL_USER: ${{ secrets.GMAIL_USER }}
+      run: node send-email.js
