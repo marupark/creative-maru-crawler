@@ -1,4 +1,4 @@
-// send-email.js - 메일 클라이언트 호환 버전
+// send-email.js - 이모지 제거 깔끔한 버전
 const nodemailer = require('nodemailer');
 
 async function sendEmail() {
@@ -28,7 +28,7 @@ async function sendEmail() {
         <!-- 헤더 -->
         <tr>
             <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; text-align: center; color: white;">
-                <h1 style="margin: 0; font-size: 24px; font-weight: 600;">🎯 지원사업 분석 리포트</h1>
+                <h1 style="margin: 0; font-size: 24px; font-weight: 600;">지원사업 분석 리포트</h1>
                 <p style="margin: 10px 0 0 0; opacity: 0.9; font-size: 14px;">크리에이티브마루 맞춤 분석 결과 | ${new Date().toLocaleDateString('ko-KR')}</p>
             </td>
         </tr>
@@ -41,7 +41,7 @@ async function sendEmail() {
                 <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: #fff3cd; border: 1px solid #ffeaa7; border-left: 4px solid #e17055; border-radius: 8px; margin: 20px 0;">
                     <tr>
                         <td style="padding: 20px;">
-                            <h3 style="margin: 0 0 10px 0; color: #d63031; font-size: 16px;">🚨 긴급 확인 필요 (D-13일)</h3>
+                            <h3 style="margin: 0 0 10px 0; color: #d63031; font-size: 16px;">긴급 확인 필요 (D-13일)</h3>
                             <p style="margin: 0; line-height: 1.5;">
                                 <strong>초기창업패키지 브랜딩 지원사업</strong><br>
                                 마감: 2025-06-30 | 지원금: 최대 5천만원<br>
@@ -76,7 +76,7 @@ async function sendEmail() {
                     </tr>
                 </table>
                 
-                <h2 style="color: #2d3436; margin: 30px 0 20px 0;">🏆 A+ 등급 사업 (즉시 신청 권장)</h2>
+                <h2 style="color: #2d3436; margin: 30px 0 20px 0; background: #00b894; color: white; padding: 10px 15px; border-radius: 6px; font-size: 18px;">A+ 등급 사업 (즉시 신청 권장)</h2>
                 
                 <!-- A+ 사업 1: 수출바우처 -->
                 <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: white; border: 1px solid #e9ecef; border-left: 5px solid #00b894; border-radius: 8px; margin: 15px 0; overflow: hidden;">
@@ -107,14 +107,14 @@ async function sendEmail() {
                             </table>
                             
                             <p style="margin: 15px 0; font-size: 14px;">
-                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">#홈페이지</span>
-                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">#브랜딩</span>
-                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">#카탈로그</span>
-                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">#수출</span>
-                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">#마케팅</span>
+                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">홈페이지</span>
+                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">브랜딩</span>
+                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">카탈로그</span>
+                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">수출</span>
+                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">마케팅</span>
                             </p>
                             
-                            <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; font-size: 14px; color: #495057; border-left: 3px solid #6c757d;">
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; font-size: 14px; color: #495057; border-left: 3px solid #00b894;">
                                 <strong>액션플랜:</strong> 즉시 신청서 작성 및 제출 권장
                             </div>
                         </td>
@@ -150,12 +150,12 @@ async function sendEmail() {
                             </table>
                             
                             <p style="margin: 15px 0; font-size: 14px;">
-                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">#디자인</span>
-                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">#브랜딩</span>
-                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">#UI/UX</span>
+                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">디자인</span>
+                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">브랜딩</span>
+                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">UI/UX</span>
                             </p>
                             
-                            <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; font-size: 14px; color: #495057; border-left: 3px solid #6c757d;">
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; font-size: 14px; color: #495057; border-left: 3px solid #00b894;">
                                 <strong>액션플랜:</strong> 즉시 신청서 작성 및 제출 권장
                             </div>
                         </td>
@@ -191,21 +191,21 @@ async function sendEmail() {
                             </table>
                             
                             <p style="margin: 15px 0; font-size: 14px;">
-                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">#디자인</span>
-                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">#홈페이지</span>
-                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">#브랜딩</span>
-                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">#UI/UX</span>
-                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">#마케팅</span>
+                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">디자인</span>
+                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">홈페이지</span>
+                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">브랜딩</span>
+                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">UI/UX</span>
+                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">마케팅</span>
                             </p>
                             
-                            <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; font-size: 14px; color: #495057; border-left: 3px solid #6c757d;">
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; font-size: 14px; color: #495057; border-left: 3px solid #00b894;">
                                 <strong>액션플랜:</strong> 즉시 신청서 작성 및 제출 권장
                             </div>
                         </td>
                     </tr>
                 </table>
                 
-                <h2 style="color: #2d3436; margin: 30px 0 20px 0;">📋 B 등급 사업 (검토 후 신청)</h2>
+                <h2 style="color: #2d3436; margin: 30px 0 20px 0; background: #fdcb6e; color: #2d3436; padding: 10px 15px; border-radius: 6px; font-size: 18px;">B 등급 사업 (검토 후 신청)</h2>
                 
                 <!-- B 등급 사업: 경남 스마트제조 -->
                 <table cellpadding="0" cellspacing="0" border="0" width="100%" style="background: white; border: 1px solid #e9ecef; border-left: 5px solid #fdcb6e; border-radius: 8px; margin: 15px 0; overflow: hidden;">
@@ -236,11 +236,11 @@ async function sendEmail() {
                             </table>
                             
                             <p style="margin: 15px 0; font-size: 14px;">
-                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">#홈페이지</span>
-                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">#브랜딩</span>
+                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">홈페이지</span>
+                                <span style="background: #f1f3f4; color: #5f6368; padding: 4px 8px; margin: 2px; border-radius: 12px; font-size: 12px;">브랜딩</span>
                             </p>
                             
-                            <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; font-size: 14px; color: #495057; border-left: 3px solid #6c757d;">
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; font-size: 14px; color: #495057; border-left: 3px solid #fdcb6e;">
                                 <strong>액션플랜:</strong> 신청 검토 및 담당자 문의
                             </div>
                         </td>
@@ -251,8 +251,8 @@ async function sendEmail() {
                 <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin: 30px 0; text-align: center;">
                     <tr>
                         <td>
-                            <a href="https://www.mssmiv.com/portal/Main" style="background: #00b894; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 600; margin: 10px 5px; display: inline-block;">💼 혁신바우처 신청하기</a>
-                            <a href="https://www.kidp.or.kr/?menuno=773" style="background: #00b894; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 600; margin: 10px 5px; display: inline-block;">🎨 디자인전문기업 신청하기</a>
+                            <a href="https://www.mssmiv.com/portal/Main" style="background: #00b894; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 600; margin: 10px 5px; display: inline-block;">[혁신바우처] 신청하기</a>
+                            <a href="https://www.kidp.or.kr/?menuno=773" style="background: #00b894; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 600; margin: 10px 5px; display: inline-block;">[디자인전문기업] 신청하기</a>
                         </td>
                     </tr>
                 </table>
@@ -264,7 +264,7 @@ async function sendEmail() {
         <tr>
             <td style="background: #f8f9fa; padding: 20px 30px; text-align: center; font-size: 12px; color: #6c757d; border-top: 1px solid #e9ecef;">
                 <p style="margin: 0;"><strong>크리에이티브마루</strong> | 경상남도 창원<br>
-                📧 pm@cmaru.com | 🌐 홈페이지제작·카탈로그제작·브랜드마케팅<br>
+                이메일: pm@cmaru.com | 사업분야: 홈페이지제작, 카탈로그제작, 브랜드마케팅<br>
                 <small>본 메일은 GPT 자동분석 시스템에 의해 생성되었습니다.</small></p>
             </td>
         </tr>
