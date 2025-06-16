@@ -280,23 +280,20 @@ class SimpleFastCrawler:
             return False
 
 def main():
-    """메인 실행"""
     print("⚡ 크리에이티브마루 빠른 크롤링 시스템")
     print("🎯 정부 지원사업 정보 수집 (혁신바우처, 수출바우처 등)")
     print("=" * 60)
     
     crawler = SimpleFastCrawler()
     
-    user_input = input("🚀 빠른 크롤링을 시작하시겠습니까? (y/n): ").lower().strip()
+    # GitHub Actions에서 자동 실행
+    print("🚀 자동 크롤링 시작...")
+    result = crawler.run_fast_crawling()
     
-    if user_input == 'y':
-        result = crawler.run_fast_crawling()
-        
-        if result:
-            print(f"\n✅ 성공! 이제 GPT 분석을 실행하세요:")
-            print(f"python perfect_email_system.py")
+    if result:
+        print(f"✅ 크롤링 성공!")
     else:
-        print("📋 대기 중입니다.")
+        print("❌ 크롤링 실패")
 
 if __name__ == "__main__":
     main()
