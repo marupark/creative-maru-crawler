@@ -362,7 +362,7 @@ class PerfectCreativeMaruSystem:
 
 def main():
     """메인 실행"""
-    print("🎯 크리에이티브마루 완벽 분석 시스템")
+    print("🚀 크리에이티브마루 완벽 분석 시스템")
     print("=" * 60)
     print("✅ 인코딩 문제 완전 해결")
     print("✅ 실제 데이터 기반 GPT 분석")  
@@ -372,9 +372,10 @@ def main():
     try:
         system = PerfectCreativeMaruSystem()
         
-       print("\n🔥 자동 분석 실행 중...")
-system.run_perfect_analysis()
-            
+        # GitHub Actions에서 자동 실행
+        print("\n🔥 자동 분석 실행 중...")
+        system.run_perfect_analysis()
+        
     except Exception as e:
         print(f"❌ 시스템 오류: {e}")
 
