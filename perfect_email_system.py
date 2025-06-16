@@ -372,13 +372,8 @@ def main():
     try:
         system = PerfectCreativeMaruSystem()
         
-        user_input = input("\n🚀 완벽한 분석을 실행하시겠습니까? (y/n): ").lower().strip()
-        
-        if user_input == 'y':
-            print("\n🔥 분석 실행 중...")
-            system.run_perfect_analysis()
-        else:
-            print("📋 시스템 준비 완료.")
+       print("\n🔥 자동 분석 실행 중...")
+system.run_perfect_analysis()
             
     except Exception as e:
         print(f"❌ 시스템 오류: {e}")
