@@ -21,15 +21,22 @@ jobs:
       run: |
         pip install -r requirements.txt
     
-    - name: Run crawler
-      run: python simple_fast_crawler.py
+   - name: Run crawler
+  env:
+    OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    GMAIL_USER: ${{ secrets.GMAIL_USER }}
+    GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
+    RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
+    GOOGLE_SHEET_URL: ${{ secrets.GOOGLE_SHEET_URL }}
+    COMPANY_NAME: ${{ secrets.COMPANY_NAME }}
+  run: python simple_fast_crawler.py
       
-    - name: Run analysis and send email
-      env:
-        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        GMAIL_USER: ${{ secrets.GMAIL_USER }}
-        GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
-        RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
-        GOOGLE_SHEET_URL: ${{ secrets.GOOGLE_SHEET_URL }}
-        COMPANY_NAME: ${{ secrets.COMPANY_NAME }}
-      run: python perfect_email_system.py
+- name: Run analysis and send email
+  env:
+    OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    GMAIL_USER: ${{ secrets.GMAIL_USER }}
+    GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
+    RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
+    GOOGLE_SHEET_URL: ${{ secrets.GOOGLE_SHEET_URL }}
+    COMPANY_NAME: ${{ secrets.COMPANY_NAME }}
+  run: python perfect_email_system.py
