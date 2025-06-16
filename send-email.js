@@ -1,12 +1,34 @@
-// send-email.js
+// send-email.js - 간단한 버전
 const nodemailer = require('nodemailer');
-const { google } = require('googleapis');
 
-// Gmail API 설정
-const oauth2Client = new google.auth.OAuth2(
-  process.env.GMAIL_CLIENT_ID,
-  process.env.GMAIL_CLIENT_SECRET,
-  'https://developers.google.com/oauthplayground'
-);
+async function sendEmail() {
+  try {
+    const transporter = nodemailer.createTransporter({
+      service: 'gmail',
+      auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_PASSWORD,
+      },
+    });
 
-// ... (길고 긴 JavaScript 코드)
+    const htmlTemplate = `
+    <!-- 여기에 HTML 메일 템플릿 -->
+    `;
+
+    const mailOptions = {
+      from: process.env.GMAIL_USER,
+      to: process.env.RECIPIENT_EMAIL || 'pm@cmaru.com',
+      subject: '[GPT 자동분석] 2025년 지원사업 요약 리포트',
+      html: htmlTemplate,
+    };
+
+    const result = await transporter.sendMail(mailOptions);
+    console.log('✅ 메일 발송 성공:', result.messageId);
+    
+  } catch (error) {
+    console.error('❌ 메일 발송 실패:', error);
+    throw error;
+  }
+}
+
+sendEmail();
