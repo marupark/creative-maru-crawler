@@ -1,0 +1,35 @@
+name: Daily Business Crawler
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 매일 오전 9시 (한국시간)
+  workflow_dispatch:  # 수동 실행 가능
+
+jobs:
+  crawl-and-analyze:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.9'
+    
+    - name: Install dependencies
+      run: |
+        pip install -r requirements.txt
+    
+    - name: Run crawler
+      run: python simple_fast_crawler.py
+      
+    - name: Run analysis and send email
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        GMAIL_USER: ${{ secrets.GMAIL_USER }}
+        GMAIL_PASSWORD: ${{ secrets.GMAIL_PASSWORD }}
+        RECIPIENT_EMAIL: ${{ secrets.RECIPIENT_EMAIL }}
+        GOOGLE_SHEET_URL: ${{ secrets.GOOGLE_SHEET_URL }}
+        COMPANY_NAME: ${{ secrets.COMPANY_NAME }}
+      run: python perfect_email_system.py
