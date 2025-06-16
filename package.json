@@ -1,5 +1,7 @@
 {
-  "name": "creative-maru-email-automation",
+  "name": "creative-maru-email",
   "version": "1.0.0",
-  "description": "크리에이티브마루 지원사업 자동 메일링 시스템"
+  "dependencies": {
+    "nodemailer": "^6.9.3"
+  }
 }
