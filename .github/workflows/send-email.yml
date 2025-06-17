@@ -2,9 +2,12 @@
 name: 크리에이티브마루 지원사업 메일링
 
 on:
+  # 수동 실행
   workflow_dispatch:
+  # 자동 스케줄 (여러 시간대 설정으로 안정성 확보)
   schedule:
-    - cron: '30 0 * * *'  # UTC 00:30 = KST 09:30으로 변경
+    - cron: '30 0 * * *'  # UTC 00:30 = KST 09:30 (메인 실행시간)
+    - cron: '0 1 * * *'   # UTC 01:00 = KST 10:00 (백업 실행시간)
 
 jobs:
   send-email:
