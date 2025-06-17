@@ -4,7 +4,7 @@ name: 크리에이티브마루 지원사업 메일링
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 0 * * *'
+    - cron: '30 0 * * *'  # UTC 00:30 = KST 09:30으로 변경
 
 jobs:
   send-email:
