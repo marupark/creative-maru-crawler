@@ -44,14 +44,14 @@ async function crawlRIPC() {
         return ripcPrograms;
         
     } catch (error) {
-        console.log('⚠️ RIPC 크롤링 실패:', error.message);
+        console.log('[실패] RIPC 크롤링 실패:', error.message);
         return [];
     }
 }
 
 // 2. KIDP 한국디자인진흥원 크롤링
 async function crawlKIDP() {
-    console.log('🔍 KIDP 한국디자인진흥원 크롤링...');
+    console.log('[KIDP] 한국디자인진흥원 크롤링...');
     
     try {
         const kidpPrograms = [
@@ -93,18 +93,18 @@ async function crawlKIDP() {
             }
         ];
         
-        console.log(`✅ KIDP: ${kidpPrograms.length}개 사업 수집`);
+        console.log(`[완료] KIDP: ${kidpPrograms.length}개 사업 수집`);
         return kidpPrograms;
         
     } catch (error) {
-        console.log('⚠️ KIDP 크롤링 실패:', error.message);
+        console.log('[실패] KIDP 크롤링 실패:', error.message);
         return [];
     }
 }
 
 // 3. 창원산업진흥원 크롤링
 async function crawlCWIP() {
-    console.log('🔍 창원산업진흥원 크롤링...');
+    console.log('[창원] 창원산업진흥원 크롤링...');
     
     try {
         const cwipPrograms = [
@@ -137,18 +137,18 @@ async function crawlCWIP() {
             }
         ];
         
-        console.log(`✅ 창원산업진흥원: ${cwipPrograms.length}개 사업 수집`);
+        console.log(`[완료] 창원산업진흥원: ${cwipPrograms.length}개 사업 수집`);
         return cwipPrograms;
         
     } catch (error) {
-        console.log('⚠️ 창원산업진흥원 크롤링 실패:', error.message);
+        console.log('[실패] 창원산업진흥원 크롤링 실패:', error.message);
         return [];
     }
 }
 
 // 4. 수출바우처 관련 사업 크롤링
 async function crawlExportVoucher() {
-    console.log('🔍 수출바우처 관련 사업 크롤링...');
+    console.log('[수출] 수출바우처 관련 사업 크롤링...');
     
     try {
         const exportPrograms = [
@@ -190,18 +190,18 @@ async function crawlExportVoucher() {
             }
         ];
         
-        console.log(`✅ 수출바우처: ${exportPrograms.length}개 사업 수집`);
+        console.log(`[완료] 수출바우처: ${exportPrograms.length}개 사업 수집`);
         return exportPrograms;
         
     } catch (error) {
-        console.log('⚠️ 수출바우처 크롤링 실패:', error.message);
+        console.log('[실패] 수출바우처 크롤링 실패:', error.message);
         return [];
     }
 }
 
 // 통합 크롤링 함수
 async function crawlAllSites() {
-    console.log('🔍 모든 사이트 크롤링 시작...');
+    console.log('[크롤링] 모든 사이트 크롤링 시작...');
     
     try {
         const [ripcResults, kidpResults, cwipResults, exportResults] = await Promise.all([
@@ -213,7 +213,7 @@ async function crawlAllSites() {
         
         const allResults = [...ripcResults, ...kidpResults, ...cwipResults, ...exportResults];
         
-        console.log(`✅ 전체 크롤링 완료: ${allResults.length}개 사업 수집`);
+        console.log(`[완료] 전체 크롤링 완료: ${allResults.length}개 사업 수집`);
         console.log(`   - RIPC: ${ripcResults.length}개`);
         console.log(`   - KIDP: ${kidpResults.length}개`);
         console.log(`   - 창원산업진흥원: ${cwipResults.length}개`);
@@ -222,7 +222,7 @@ async function crawlAllSites() {
         return allResults;
         
     } catch (error) {
-        console.error('❌ 크롤링 실패:', error);
+        console.error('[오류] 크롤링 실패:', error);
         return [];
     }
 }
@@ -364,16 +364,16 @@ function getGrade(score) {
 
 function getActionPlan(grade, isUrgent) {
     if (isUrgent) {
-        return "🔴 긴급 확인 필요";
+        return "[긴급] 확인 필요";
     }
     
     switch(grade) {
-        case "A+": return "⭐ 즉시 신청서 작성 및 제출 권장";
-        case "A": return "🎯 상세 검토 후 신청 준비";
-        case "B": return "📋 신청 검토 및 담당자 문의";
-        case "C": return "📄 관심 대상, 모니터링";
-        case "D": return "⚪ 낮은 우선순위, 참고용";
-        case "E": return "❌ 제외 대상";
+        case "A+": return "[A+] 즉시 신청서 작성 및 제출 권장";
+        case "A": return "[A] 상세 검토 후 신청 준비";
+        case "B": return "[B] 신청 검토 및 담당자 문의";
+        case "C": return "[C] 관심 대상, 모니터링";
+        case "D": return "[D] 낮은 우선순위, 참고용";
+        case "E": return "[E] 제외 대상";
     }
 }
 
@@ -381,7 +381,7 @@ function getActionPlan(grade, isUrgent) {
 
 async function sendEmail() {
     try {
-        console.log('🚀 크리에이티브마루 통합 메일링 시스템 시작...');
+        console.log('[시작] 크리에이티브마루 통합 메일링 시스템 시작...');
         
         const transporter = nodemailer.createTransport({
             service: 'gmail',
@@ -391,8 +391,8 @@ async function sendEmail() {
             },
         });
 
-        // 🆕 실제 크롤링 데이터 + 추가 샘플 데이터
-        console.log('🔍 실제 지원사업 데이터 수집 중...');
+        // 실제 크롤링 데이터 + 추가 샘플 데이터
+        console.log('[수집] 실제 지원사업 데이터 수집 중...');
         const crawledData = await crawlAllSites();
         
         // 추가 샘플 데이터 (다양성 확보)
@@ -415,7 +415,7 @@ async function sendEmail() {
 
         // 데이터 통합
         const allProjects = [...crawledData, ...additionalSamples];
-        console.log(`📊 총 ${allProjects.length}개 지원사업 분석 중 (크롤링: ${crawledData.length}, 샘플: ${additionalSamples.length})`);
+        console.log(`[분석] 총 ${allProjects.length}개 지원사업 분석 중 (크롤링: ${crawledData.length}, 샘플: ${additionalSamples.length})`);
 
         // 분석 실행
         const results = [];
@@ -472,7 +472,7 @@ async function sendEmail() {
         <!-- 헤더 -->
         <tr>
             <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 30px; text-align: center; color: white;">
-                <h1 style="margin: 0; font-size: 28px; font-weight: 600;">🎨 크리에이티브마루</h1>
+                <h1 style="margin: 0; font-size: 28px; font-weight: 600;">크리에이티브마루</h1>
                 <p style="margin: 15px 0 5px 0; font-size: 18px; opacity: 0.9;">통합 지원사업 분석 리포트</p>
                 <p style="margin: 0; opacity: 0.8; font-size: 14px;">수출바우처 + 지식재산 + 디자인 특화 | ${new Date().toLocaleDateString('ko-KR')}</p>
             </td>
@@ -484,7 +484,7 @@ async function sendEmail() {
                 <!-- 🆕 긴급 사업 섹션 -->
                 ${urgentProjects.length > 0 ? `
                 <h2 style="color: #d63031; margin: 0 0 20px 0; background: #fff3cd; padding: 15px 20px; border-radius: 8px; border-left: 5px solid #e17055; display: flex; align-items: center; gap: 10px;">
-                    🚨 긴급 확인 필요 (D-14 이내)
+                    [긴급] 확인 필요 (D-14 이내)
                     <span style="background: #d63031; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">${urgentProjects.length}개</span>
                 </h2>
                 ${urgentProjects.map(project => `
@@ -499,7 +499,7 @@ async function sendEmail() {
                                 </div>
                             </div>
                             <p style="margin: 0 0 15px 0; font-size: 14px; color: #636e72;">${project.agency} | ${project.deadline} | ${project.budget}</p>
-                            <p style="margin: 0 0 15px 0; font-size: 14px; color: #2d3436; font-weight: 600;">⏰ D-${project.daysUntil}</p>
+                            <p style="margin: 0 0 15px 0; font-size: 14px; color: #2d3436; font-weight: 600;">D-${project.daysUntil}</p>
                             <div style="margin: 15px 0; font-size: 14px; color: #6f42c1;">${project.tags}</div>
                             <div style="background: #f8d7da; padding: 15px; border-radius: 6px; color: #721c24;">
                                 <strong>액션플랜:</strong> ${project.actionPlan}
@@ -538,7 +538,7 @@ async function sendEmail() {
                 <!-- 🆕 수출바우처 특화 섹션 -->
                 ${exportProjects.length > 0 ? `
                 <h2 style="color: #28a745; margin: 30px 0 20px 0; background: #e8f5e8; padding: 15px 20px; border-radius: 8px; border-left: 6px solid #28a745; display: flex; align-items: center; gap: 10px;">
-                    🌏 수출바우처 특화 사업
+                    [수출] 수출바우처 특화 사업
                     <span style="background: #28a745; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">${exportProjects.length}개</span>
                 </h2>
                 ${exportProjects.slice(0, 5).map(project => `
@@ -566,7 +566,7 @@ async function sendEmail() {
                 <!-- 🆕 지식재산 특화 섹션 -->
                 ${ipProjects.length > 0 ? `
                 <h2 style="color: #6f42c1; margin: 30px 0 20px 0; background: #f3e5f5; padding: 15px 20px; border-radius: 8px; border-left: 6px solid #6f42c1; display: flex; align-items: center; gap: 10px;">
-                    🏛️ 지식재산 특화 사업
+                    [IP] 지식재산 특화 사업
                     <span style="background: #6f42c1; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">${ipProjects.length}개</span>
                 </h2>
                 ${ipProjects.slice(0, 4).map(project => `
@@ -594,7 +594,7 @@ async function sendEmail() {
                 <!-- A+ 등급 사업 -->
                 ${aPlusProjects.length > 0 ? `
                 <h2 style="color: #00b894; margin: 30px 0 20px 0; background: #d1ecf1; padding: 15px 20px; border-radius: 8px; border-left: 6px solid #00b894; display: flex; align-items: center; gap: 10px;">
-                    ⭐ A+ 등급 사업 (즉시 신청 권장)
+                    [A+] A+ 등급 사업 (즉시 신청 권장)
                     <span style="background: #00b894; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">${aPlusProjects.length}개</span>
                 </h2>
                 ${aPlusProjects.slice(0, 6).map(project => `
@@ -625,7 +625,7 @@ async function sendEmail() {
         <!-- 푸터 -->
         <tr>
             <td style="background: #2d3436; color: white; padding: 30px; text-align: center;">
-                <h3 style="margin: 0 0 15px 0; font-size: 20px; color: #74b9ff;">🎨 크리에이티브마루</h3>
+                <h3 style="margin: 0 0 15px 0; font-size: 20px; color: #74b9ff;">크리에이티브마루</h3>
                 <p style="margin: 0 0 15px 0; font-size: 16px; opacity: 0.9;">
                     경상남도 창원 | 디자인 • 브랜딩 • 홈페이지제작 • 카탈로그 • 수출바우처 • 지식재산
                 </p>
@@ -647,22 +647,22 @@ async function sendEmail() {
         const mailOptions = {
             from: process.env.GMAIL_USER,
             to: process.env.RECIPIENT_EMAIL || 'pm@cmaru.com',
-            subject: `🎨 크리에이티브마루 통합 지원사업 리포트 | ${urgentCount}개 긴급 | ${exportRelatedCount}개 수출바우처`,
+            subject: `크리에이티브마루 통합 지원사업 리포트 | ${urgentCount}개 긴급 | ${exportRelatedCount}개 수출바우처`,
             html: htmlTemplate,
         };
 
-        console.log(`📮 발송 대상: ${mailOptions.to}`);
-        console.log(`🚨 긴급 사업: ${urgentCount}개`);
-        console.log(`⭐ A+ 사업: ${aPlusCount}개`);
-        console.log(`🌏 수출바우처 사업: ${exportRelatedCount}개`);
-        console.log(`🏛️ 지식재산 사업: ${ipRelatedCount}개`);
+        console.log(`[발송] 발송 대상: ${mailOptions.to}`);
+        console.log(`[통계] 긴급 사업: ${urgentCount}개`);
+        console.log(`[통계] A+ 사업: ${aPlusCount}개`);
+        console.log(`[통계] 수출바우처 사업: ${exportRelatedCount}개`);
+        console.log(`[통계] 지식재산 사업: ${ipRelatedCount}개`);
         
         const result = await transporter.sendMail(mailOptions);
-        console.log('✅ 메일 발송 성공!');
-        console.log('📧 Message ID:', result.messageId);
+        console.log('[성공] 메일 발송 성공!');
+        console.log('[ID] Message ID:', result.messageId);
         
     } catch (error) {
-        console.error('❌ 메일 발송 실패:', error.message);
+        console.error('[실패] 메일 발송 실패:', error.message);
         process.exit(1);
     }
 }
