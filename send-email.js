@@ -383,7 +383,7 @@ async function sendEmail() {
     try {
         console.log('🚀 크리에이티브마루 통합 메일링 시스템 시작...');
         
-        const transporter = nodemailer.createTransporter({
+        const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
                 user: process.env.GMAIL_USER,
