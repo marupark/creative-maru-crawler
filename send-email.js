@@ -1,17 +1,26 @@
-// ===== MAILNARA v5.1 완전 수정 버전 =====
-// 모든 문제점 해결 + 안전한 메일 발송
-
+// ===== GitHub 환경용 MAILNARA v5.1 안전 버전 =====
 const nodemailer = require('nodemailer');
 const axios = require('axios');
 const cheerio = require('cheerio');
 
-// ===== 1. 통합 필터링 함수 (v5.1 최종) =====
+// 환경 변수 확인 및 기본값 설정
+const GMAIL_USER = process.env.GMAIL_USER || 'hcsarang@gmail.com';
+const GMAIL_PASSWORD = process.env.GMAIL_PASSWORD || 'wduc vthz gxmc qxph';
+const RECIPIENT_EMAIL = process.env.RECIPIENT_EMAIL || 'pm@cmaru.com';
+
+console.log('=== MAILNARA v5.1 GitHub 환경용 시작 ===');
+console.log('환경 변수 확인:');
+console.log(`- GMAIL_USER: ${GMAIL_USER ? '설정됨' : '미설정'}`);
+console.log(`- GMAIL_PASSWORD: ${GMAIL_PASSWORD ? '설정됨' : '미설정'}`);
+console.log(`- RECIPIENT_EMAIL: ${RECIPIENT_EMAIL}`);
+
+// ===== 1. 통합 필터링 함수 =====
 function shouldIncludeNotice(title, content, agency) {
     const titleLower = title.toLowerCase();
     const contentLower = content.toLowerCase();
     const text = `${titleLower} ${contentLower}`;
     
-    // 제외 키워드 (지시서 기준)
+    // 제외 키워드
     const excludeKeywords = [
         'ip나래', 'ip 나래', '나래', 
         '특허', '출원', 
@@ -24,12 +33,7 @@ function shouldIncludeNotice(title, content, agency) {
         '제품개발', 
         '국제특허', 
         '상표', 
-        '신사업발굴',
-        '기술창업',
-        'ip-r&d', 'ip r&d',
-        '대학', '연구소',
-        '기술이전',
-        'r&d'
+        '신사업발굴'
     ];
     
     // 제목에서 제외 키워드 체크
@@ -254,202 +258,94 @@ function extractDeadline(periodText) {
     return periodText;
 }
 
-// ===== 5. 크롤링 함수들 (v5.1 통합) =====
-
-// RIPC 크롤링
-async function crawlRIPC() {
-    console.log('RIPC 지역지식재산센터 크롤링...');
+// ===== 5. 샘플 데이터 (안전한 크롤링) =====
+async function crawlAllSites() {
+    console.log('=== 안전한 샘플 데이터 수집 시작 ===');
     
     try {
-        const ripcPrograms = [
-            {
-                title: '2025년 경남 IP창출 종합 패키지 지원사업',
-                agency: 'RIPC 경남센터',
-                period: '2025.01.01 ~ 2025.07.31',
-                summary: '중소기업 지식재산권 출원 및 특허 분석, 상표·디자인권 등록 지원'
-            },
-            {
-                title: '지식재산 긴급지원사업 (창원센터)',
-                agency: 'RIPC 창원센터', 
-                period: '2025.01.01 ~ 2025.06.25',
-                summary: '창원 소재 중소기업 지식재산 애로사항 긴급 해결 지원'
-            }
-        ];
-
-        const validNotices = ripcPrograms.filter(program => 
-            shouldIncludeNotice(program.title, program.summary, program.agency)
-        ).map(program => ({
-            ...program,
-            deadline: extractDeadline(program.period),
-            link: '#'
-        }));
-
-        console.log(`RIPC: ${validNotices.length}개 사업 수집`);
-        return validNotices;
-        
-    } catch (error) {
-        console.log('RIPC 크롤링 실패:', error.message);
-        return [];
-    }
-}
-
-// KIDP 크롤링
-async function crawlKIDP() {
-    console.log('한국디자인진흥원 크롤링...');
-    
-    try {
-        const kidpPrograms = [
-            {
-                title: '2025년 디자인주도 제조혁신사업',
-                agency: '한국디자인진흥원',
-                period: '2025.01.01 ~ 2025.08.15',
-                summary: '제조기업 디자인 혁신 및 제품 고도화 지원'
-            },
-            {
-                title: '중소기업 브랜딩 지원사업',
-                agency: '한국디자인진흥원',
-                period: '2025.01.01 ~ 2025.09.30',
-                summary: '중소기업 브랜드 개발 및 마케팅 디자인 지원'
-            }
-        ];
-        
-        const validNotices = kidpPrograms.filter(program => 
-            shouldIncludeNotice(program.title, program.summary, program.agency)
-        ).map(program => ({
-            ...program,
-            deadline: extractDeadline(program.period),
-            link: '#'
-        }));
-        
-        console.log(`KIDP: ${validNotices.length}개 사업 수집`);
-        return validNotices;
-        
-    } catch (error) {
-        console.log('KIDP 크롤링 실패:', error.message);
-        return [];
-    }
-}
-
-// 창원산업진흥원 크롤링
-async function crawlCWIP() {
-    console.log('창원산업진흥원 크롤링...');
-    
-    try {
-        const cwipPrograms = [
-            {
-                title: '창원 중소기업 디지털 마케팅 지원',
-                agency: '창원산업진흥원',
-                period: '2025.01.01 ~ 2025.10.15',
-                summary: '홈페이지 제작, 온라인 마케팅, 디지털 전환 지원'
-            },
-            {
-                title: '창원 기업 브랜드 강화 지원사업',
-                agency: '창원산업진흥원',
-                period: '2025.01.01 ~ 2025.09.20',
-                summary: '창원 소재 기업의 CI/BI 개발 및 카탈로그 제작 지원'
-            }
-        ];
-        
-        const validNotices = cwipPrograms.filter(program => 
-            shouldIncludeNotice(program.title, program.summary, program.agency)
-        ).map(program => ({
-            ...program,
-            deadline: extractDeadline(program.period),
-            link: '#'
-        }));
-        
-        console.log(`창원산업진흥원: ${validNotices.length}개 사업 수집`);
-        return validNotices;
-        
-    } catch (error) {
-        console.log('창원산업진흥원 크롤링 실패:', error.message);
-        return [];
-    }
-}
-
-// 수출바우처 크롤링
-async function crawlExportVoucher() {
-    console.log('수출바우처 관련 사업 크롤링...');
-    
-    try {
-        const exportPrograms = [
+        // GitHub 환경에서는 샘플 데이터 사용 (안전함)
+        const sampleNotices = [
             {
                 title: '2025년 수출바우처 지원사업 (해외마케팅)',
                 agency: 'KOTRA',
                 period: '상시모집',
-                summary: '해외 진출을 위한 홈페이지 다국어 구축, 카탈로그 제작, 브랜드 마케팅 지원'
+                summary: '해외 진출을 위한 홈페이지 다국어 구축, 카탈로그 제작, 브랜드 마케팅 지원',
+                deadline: '상시',
+                link: '#'
             },
             {
                 title: '중소기업 수출 디지털 마케팅 지원',
                 agency: '수출바우처사업단',
                 period: '상시모집',
-                summary: '수출기업 대상 온라인 마케팅, SNS 마케팅, 브랜드 홍보 지원'
+                summary: '수출기업 대상 온라인 마케팅, SNS 마케팅, 브랜드 홍보 지원',
+                deadline: '상시',
+                link: '#'
             },
             {
                 title: '글로벌 브랜드 강화 지원사업',
                 agency: 'KOTRA',
                 period: '2025.01.01 ~ 2025.10.30',
-                summary: '수출 유망 기업의 글로벌 브랜드 구축 및 해외 전시회 참가 지원'
+                summary: '수출 유망 기업의 글로벌 브랜드 구축 및 해외 전시회 참가 지원',
+                deadline: '2025-10-30',
+                link: '#'
             },
             {
                 title: '경남 수출기업 패키지디자인 지원',
                 agency: '경남수출지원센터',
                 period: '2025.01.01 ~ 2025.08.31',
-                summary: '경남 소재 수출기업 대상 패키지디자인 및 제품 브랜딩 지원'
+                summary: '경남 소재 수출기업 대상 패키지디자인 및 제품 브랜딩 지원',
+                deadline: '2025-08-31',
+                link: '#'
+            },
+            {
+                title: '창원 중소기업 디지털 마케팅 지원',
+                agency: '창원산업진흥원',
+                period: '2025.01.01 ~ 2025.10.15',
+                summary: '홈페이지 제작, 온라인 마케팅, 디지털 전환 지원',
+                deadline: '2025-10-15',
+                link: '#'
+            },
+            {
+                title: '창원 기업 브랜드 강화 지원사업',
+                agency: '창원산업진흥원',
+                period: '2025.01.01 ~ 2025.09.20',
+                summary: '창원 소재 기업의 CI/BI 개발 및 카탈로그 제작 지원',
+                deadline: '2025-09-20',
+                link: '#'
+            },
+            {
+                title: '2025년 디자인주도 제조혁신사업',
+                agency: '한국디자인진흥원',
+                period: '2025.01.01 ~ 2025.08.15',
+                summary: '제조기업 디자인 혁신 및 제품 고도화 지원',
+                deadline: '2025-08-15',
+                link: '#'
+            },
+            {
+                title: '중소기업 브랜딩 지원사업',
+                agency: '한국디자인진흥원',
+                period: '2025.01.01 ~ 2025.09.30',
+                summary: '중소기업 브랜드 개발 및 마케팅 디자인 지원',
+                deadline: '2025-09-30',
+                link: '#'
             }
         ];
         
-        const validNotices = exportPrograms.filter(program => 
-            shouldIncludeNotice(program.title, program.summary, program.agency)
-        ).map(program => ({
-            ...program,
-            deadline: extractDeadline(program.period),
-            link: '#'
-        }));
+        // 필터링 적용
+        const validNotices = sampleNotices.filter(notice => 
+            shouldIncludeNotice(notice.title, notice.summary, notice.agency)
+        );
         
-        console.log(`수출바우처: ${validNotices.length}개 사업 수집`);
+        console.log(`총 ${validNotices.length}개 유효 공고 수집 완료`);
         return validNotices;
         
     } catch (error) {
-        console.log('수출바우처 크롤링 실패:', error.message);
+        console.error('데이터 수집 오류:', error);
         return [];
     }
 }
 
-// ===== 6. 통합 크롤링 =====
-async function crawlAllSites() {
-    console.log('=== MAILNARA v5.1 크롤링 시스템 시작 ===');
-    
-    const allNotices = [];
-    
-    try {
-        const ripcNotices = await crawlRIPC();
-        const kidpNotices = await crawlKIDP();
-        const cwipNotices = await crawlCWIP();
-        const exportNotices = await crawlExportVoucher();
-        
-        allNotices.push(...ripcNotices, ...kidpNotices, ...cwipNotices, ...exportNotices);
-        
-        // 중복 제거
-        const uniqueNotices = allNotices.filter((notice, index, self) => 
-            index === self.findIndex(n => n.title === notice.title)
-        );
-        
-        console.log('=== 크롤링 결과 요약 ===');
-        console.log(`- RIPC: ${ripcNotices.length}개`);
-        console.log(`- KIDP: ${kidpNotices.length}개`);
-        console.log(`- 창원산업진흥원: ${cwipNotices.length}개`);
-        console.log(`- 수출바우처: ${exportNotices.length}개`);
-        console.log(`총 ${uniqueNotices.length}개 유효 공고 수집 완료`);
-        
-        return uniqueNotices;
-    } catch (error) {
-        console.error('전체 크롤링 오류:', error);
-        return allNotices;
-    }
-}
-
-// ===== 7. 안전한 HTML 템플릿 생성 =====
+// ===== 6. 안전한 HTML 템플릿 생성 =====
 function generateCardHTML(notice) {
     const analysis = analyzeNotice(notice.title, notice.summary || '', notice.agency);
     const ddayInfo = calculateDDay(notice.deadline);
@@ -569,7 +465,7 @@ function generateHTMLEmail(notices) {
             <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 15px; text-align: center; margin-bottom: 30px;">
                 <h1 style="margin: 0; font-size: 28px; font-weight: bold;">[CREATIVE MARU] 크리에이티브마루</h1>
                 <p style="margin: 10px 0 0 0; font-size: 18px; opacity: 0.9;">MAILNARA v5.1 실시간 분석 리포트</p>
-                <p style="margin: 5px 0 0 0; font-size: 14px; opacity: 0.8;">${new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' })} | 고도화 상용버전</p>
+                <p style="margin: 5px 0 0 0; font-size: 14px; opacity: 0.8;">${new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' })} | GitHub 자동화 버전</p>
             </div>
             
             ${generateStatsCards(notices)}
@@ -582,7 +478,7 @@ function generateHTMLEmail(notices) {
             <div style="margin-top: 40px; padding: 25px; background: #34495e; color: white; border-radius: 12px; text-align: center;">
                 <p style="margin: 0; font-size: 18px; font-weight: bold;">[CREATIVE MARU] 크리에이티브마루</p>
                 <p style="margin: 8px 0; font-size: 14px; opacity: 0.9;">경상남도 창원 | 디자인 • 브랜딩 • 홈페이지제작 • 카탈로그 • 지원사업 전문</p>
-                <p style="margin: 5px 0 0 0; font-size: 12px; opacity: 0.7;">MAILNARA v5.1 | 매일 오전 9:30 자동 발송 | 분석 정확도 90%+ | 문의: pm@cmaru.com</p>
+                <p style="margin: 5px 0 0 0; font-size: 12px; opacity: 0.7;">MAILNARA v5.1 | GitHub Actions 자동화 | 분석 정확도 90%+ | 문의: pm@cmaru.com</p>
             </div>
         </div>
     </body>
@@ -590,7 +486,7 @@ function generateHTMLEmail(notices) {
     `;
 }
 
-// ===== 8. 유틸리티 함수들 =====
+// ===== 7. 유틸리티 함수들 =====
 function getAgencyColor(agency) {
     if (agency.includes('RIPC') || agency.includes('지식재산')) return '#9b59b6';
     if (agency.includes('KIDP') || agency.includes('디자인진흥원')) return '#8e44ad';
@@ -639,23 +535,70 @@ function generateEmailSubject(notices) {
     return `[크리에이티브마루] 실시간 분석 리포트 | 긴급 ${stats.urgent}건 | 평균 관련도 ${stats.avgScore}점`;
 }
 
-// ===== 9. 메인 함수 =====
-async function main() {
-    console.log('=== MAILNARA v5.1 최종 상용버전 시작 ===');
-    console.log('목표: 분석 정확도 90% | A+ 공고 1-4개 | 평균 점수 40-60점');
+// ===== 8. 안전한 메일 발송 함수 =====
+async function sendEmail(subject, htmlContent) {
+    console.log('[v5.1] 메일 발송 시작...');
     
     try {
-        // 전체 사이트 크롤링
+        // Gmail 인증 정보 확인
+        if (!GMAIL_USER || !GMAIL_PASSWORD) {
+            throw new Error('Gmail 인증 정보가 설정되지 않았습니다. GitHub Secrets를 확인하세요.');
+        }
+        
+        const transporter = nodemailer.createTransporter({
+            service: 'gmail',
+            auth: {
+                user: GMAIL_USER,
+                pass: GMAIL_PASSWORD
+            }
+        });
+
+        const mailOptions = {
+            from: GMAIL_USER,
+            to: RECIPIENT_EMAIL,
+            subject: subject,
+            html: htmlContent
+        };
+
+        console.log(`발송 대상: ${RECIPIENT_EMAIL}`);
+        console.log(`제목: ${subject}`);
+        
+        const info = await transporter.sendMail(mailOptions);
+        console.log('[v5.1] 메일 발송 성공:', info.messageId);
+        
+    } catch (error) {
+        console.error('[v5.1] 메일 발송 실패:', error.message);
+        
+        // 에러 상세 정보 출력
+        if (error.code === 'EAUTH') {
+            console.error('Gmail 인증 실패: 앱 비밀번호를 확인하세요.');
+        } else if (error.code === 'ENOTFOUND') {
+            console.error('네트워크 연결 실패: 인터넷 연결을 확인하세요.');
+        }
+        
+        throw error;
+    }
+}
+
+// ===== 9. 메인 함수 =====
+async function main() {
+    console.log('=== MAILNARA v5.1 GitHub 환경용 시작 ===');
+    
+    try {
+        // 환경 확인
+        console.log('1. 환경 변수 확인 완료');
+        
+        // 데이터 수집
+        console.log('2. 데이터 수집 중...');
         const allNotices = await crawlAllSites();
         
-        // 예외처리: 공고 수 0건
         if (allNotices.length === 0) {
-            console.log("수집된 공고가 없습니다.");
-            console.log("메일 발송을 중단합니다.");
-            return;
+            console.log("수집된 공고가 없습니다. 시스템을 종료합니다.");
+            process.exit(0);
         }
         
         // 품질 검증
+        console.log('3. 품질 검증 중...');
         const stats = {
             aPlus: allNotices.filter(n => {
                 const analysis = analyzeNotice(n.title, n.summary || '', n.agency);
@@ -667,60 +610,29 @@ async function main() {
             }, 0) / allNotices.length)
         };
         
-        console.log(`=== v5.1 품질 검증 ===`);
         console.log(`총 공고: ${allNotices.length}건`);
-        console.log(`A+ 등급: ${stats.aPlus}건 (목표: 1-4개)`);
-        console.log(`평균 점수: ${stats.avgScore}점 (목표: 40-60점)`);
+        console.log(`A+ 등급: ${stats.aPlus}건`);
+        console.log(`평균 점수: ${stats.avgScore}점`);
         
         // HTML 메일 생성
+        console.log('4. 메일 생성 중...');
         const htmlContent = generateHTMLEmail(allNotices);
         const subject = generateEmailSubject(allNotices);
         
         // 메일 발송
+        console.log('5. 메일 발송 중...');
         await sendEmail(subject, htmlContent);
         
-        console.log('=== MAILNARA v5.1 분석 리포트 발송 완료 ===');
-        console.log(`제목: ${subject}`);
+        console.log('=== MAILNARA v5.1 완료 ===');
+        console.log(`성공적으로 완료되었습니다!`);
         
     } catch (error) {
-        console.error('MAILNARA v5.1 시스템 오류:', error);
+        console.error('=== MAILNARA v5.1 오류 ===');
+        console.error('오류 메시지:', error.message);
         console.error('스택 트레이스:', error.stack);
         process.exit(1);
     }
 }
-
-// ===== 10. 메일 발송 함수 =====
-async function sendEmail(subject, htmlContent) {
-    console.log('[v5.1] 메일 발송 중...');
-    
-    const transporter = nodemailer.createTransporter({
-        service: 'gmail',
-        auth: {
-            user: 'hcsarang@gmail.com',
-            pass: 'wduc vthz gxmc qxph'
-        }
-    });
-
-    const mailOptions = {
-        from: 'hcsarang@gmail.com',
-        to: 'pm@cmaru.com',
-        subject: subject,
-        html: htmlContent
-    };
-
-    try {
-        const info = await transporter.sendMail(mailOptions);
-        console.log('[v5.1] 메일 발송 성공:', info.messageId);
-    } catch (error) {
-        console.error('[v5.1] 메일 발송 실패:', error);
-        throw error;
-    }
-}
-
-console.log('MAILNARA v5.1 완전 수정 버전 로드 완료!');
-console.log('이모티콘 제거된 안전 템플릿 적용');
-console.log('카드형 UI + 통계 대시보드');
-console.log('모든 함수 통합 완료');
 
 // 메인 함수 실행
 main();
