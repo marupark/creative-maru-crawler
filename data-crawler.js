@@ -205,7 +205,7 @@ async function crawlKIDP() {
     try {
         console.log('[실제크롤링] 한국디자인진흥원...');
         
-        const response = await axios.get('https://www.kidp.or.kr/kidp/support/notice/list.do', {
+        const response = await axios.get('https://kidp.or.kr/?menuno=1123', {
             timeout: 10000,
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
@@ -261,7 +261,7 @@ async function crawlKOTRA() {
     try {
         console.log('[실제크롤링] KOTRA 수출바우처...');
         
-        const response = await axios.get('https://www.kotra.or.kr/kh/program/kh/KSHC01000M.html', {
+        const response = await axios.get('https://www.kotra.or.kr/subList/20000020753', {
             timeout: 10000,
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
@@ -320,7 +320,7 @@ async function crawlCWIP() {
     try {
         console.log('[실제크롤링] 창원산업진흥원...');
         
-        const response = await axios.get('https://www.cwip.re.kr/', {
+        const response = await axios.get('https://www.cwip.or.kr/', {
             timeout: 10000,
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
@@ -346,7 +346,7 @@ async function crawlCWIP() {
                         agency: agency,
                         period: period,
                         deadline: extractDeadline(period),
-                        link: link ? (link.startsWith('http') ? link : `https://www.cwip.re.kr${link}`) : '#',
+                        link: link ? (link.startsWith('http') ? link : `https://www.cwip.or.kr${link}`) : '#',
                         summary: `창원산업진흥원 ${title}`,
                         source: 'CWIP_실제크롤링',
                         crawledAt: new Date().toISOString(),
