@@ -545,7 +545,7 @@ async function sendEmail(subject, htmlContent) {
             throw new Error('Gmail 인증 정보가 설정되지 않았습니다. GitHub Secrets를 확인하세요.');
         }
         
-        const transporter = nodemailer.createTransporter({
+        const transporter = nodemailer.createTransport({  // ← 여기가 핵심 수정
             service: 'gmail',
             auth: {
                 user: GMAIL_USER,
