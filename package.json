@@ -9,7 +9,7 @@
     "start": "npm run crawl && npm run send"
   },
   "dependencies": {
-    "nodemailer": "^6.9.8",
+    "nodemailer": "^6.9.7",
     "axios": "^1.6.2",
     "cheerio": "^1.0.0-rc.12"
   },
