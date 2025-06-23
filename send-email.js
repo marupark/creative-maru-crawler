@@ -50,7 +50,7 @@ async function crawlRIPC() {
 }
 
 // 2. KIDP 한국디자인진흥원 크롤링
- crawlKIDP() {
+ async function crawlKIDP() {
     console.log('[KIDP] 한국디자인진흥원 크롤링...');
     
     try {
@@ -103,7 +103,7 @@ async function crawlRIPC() {
 }
 
 // 3. 창원산업진흥원 크롤링
- crawlCWIP() {
+ async function crawlCWIP() {
     console.log('[창원] 창원산업진흥원 크롤링...');
     
     try {
@@ -147,7 +147,7 @@ async function crawlRIPC() {
 }
 
 // 4. 수출바우처 관련 사업 크롤링
- crawlExportVoucher() {
+ async function crawlExportVoucher() {
     console.log('[수출] 수출바우처 관련 사업 크롤링...');
     
     try {
@@ -203,7 +203,7 @@ async function crawlRIPC() {
 // 아래 함수들만 추가하세요
 
 // 5. 경남테크노파크 크롤링
- crawlGNTP() {
+ async function crawlGNTP() {
     try {
         console.log('경남테크노파크 크롤링 시작...');
         const response = await axios.get('https://www.gntp.or.kr/kor/board/list.gntp', {
@@ -255,7 +255,7 @@ async function crawlRIPC() {
 }
 
 // 6. 경남경제진흥원 크롤링
- crawlGNCEP() {
+ async function crawlGNCEP() {
     try {
         console.log('경남경제진흥원 크롤링 시작...');
         const response = await axios.get('https://www.gncep.or.kr/', {
@@ -309,7 +309,7 @@ async function crawlRIPC() {
 }
 
 // 7. 혁신바우처 (SME Voucher) 크롤링
- crawlSMEVoucher() {
+ async function crawlSMEVoucher() {
     try {
         console.log('혁신바우처 크롤링 시작...');
         const response = await axios.get('https://www.mssmiv.com/portal/Main', {
@@ -496,7 +496,7 @@ function calculateScoreEnhanced(title, content, agency) {
 }
 
 // 메인 크롤링 함수 업데이트 (기존 crawlAllSites 함수 대체)
- crawlAllSitesEnhanced() {
+ async function crawlAllSitesEnhanced() {
     console.log('=== 전체 사이트 크롤링 시작 (7개 사이트) ===');
     
     const allNotices = [];
@@ -549,7 +549,7 @@ function calculateScoreEnhanced(title, content, agency) {
 console.log('🚀 크롤링 시스템 v2.0 업그레이드 완료!');
 console.log('📊 총 7개 사이트 + 강화된 마케팅 필터링 적용됨');
 // 통합 크롤링 함수
- crawlAllSites() {
+ async function crawlAllSites() {
     console.log('[크롤링] 모든 사이트 크롤링 시작...');
     
     try {
@@ -859,7 +859,7 @@ function calculateDDay(deadline) {
 /**
  * 경남테크노파크 크롤링 함수
  */
- crawlGNTP() {
+ async function crawlGNTP() {
     try {
         console.log('[v5.1] 경남테크노파크 크롤링 시작...');
         const response = await axios.get('https://www.gntp.or.kr/kor/board/list.gntp', {
@@ -910,7 +910,7 @@ function calculateDDay(deadline) {
 /**
  * 경남경제진흥원 크롤링 함수
  */
- crawlGNCEP() {
+ async function crawlGNCEP() {
     try {
         console.log('[v5.1] 경남경제진흥원 크롤링 시작...');
         const response = await axios.get('https://www.gncep.or.kr/', {
@@ -962,7 +962,7 @@ function calculateDDay(deadline) {
 /**
  * 혁신바우처(KOSME) 크롤링 함수
  */
- crawlKOSME() {
+ async function crawlKOSME() {
     try {
         console.log('[v5.1] 혁신바우처(KOSME) 크롤링 시작...');
         const response = await axios.get('https://www.kosmes.or.kr/sbc/SH/SHB/SHBS02.do', {
@@ -1017,7 +1017,7 @@ function calculateDDay(deadline) {
 /**
  * RIPC 누락 보완 크롤링 함수
  */
- crawlRIPCEnhanced() {
+ async function crawlRIPCEnhanced() {
     try {
         console.log('[v5.1] RIPC 누락 보완 크롤링 시작...');
         
@@ -1367,7 +1367,7 @@ function generateEmailSubjectV5(notices) {
 /**
  * v5.1 전체 사이트 크롤링 함수
  */
- crawlAllSitesV51() {
+ async function crawlAllSitesV51() {
     console.log('=== MAILNARA v5.1 크롤링 시스템 시작 ===');
     
     const allNotices = [];
