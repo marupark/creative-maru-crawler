@@ -1,0 +1,7 @@
+node_modules/
+.env
+*.log
+.DS_Store
+mailnara-data.json
+mailnara-data-error.json
+send-email.js.backup
