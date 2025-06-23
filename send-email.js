@@ -2231,33 +2231,7 @@ const htmlTemplate = `
             </div>
         </div>
         
-        <!-- 공고 리스트 -->
-        <div style="margin-top: 30px;">
-            <h2 style="color: #2c3e50; border-bottom: 3px solid #3498db; padding-bottom: 10px; margin-bottom: 25px;">📋 지원사업 상세 리스트</h2>
-            ${allNotices.map(notice => `
-                <div style="border: 2px solid #3498db; border-radius: 12px; margin: 15px 0; background: white; box-shadow: 0 4px 8px rgba(0,0,0,0.1); overflow: hidden;">
-                    <div style="background: #3498db; color: white; padding: 10px 15px; font-size: 14px; font-weight: bold; display: flex; justify-content: space-between;">
-                        <span>📋 ${notice.agency}</span>
-                        <span style="background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 12px; font-size: 12px;">마감일 확인</span>
-                    </div>
-                    <div style="padding: 20px;">
-                        <h3 style="margin: 0 0 15px 0; font-size: 18px; font-weight: bold; color: #2c3e50;">${notice.title}</h3>
-                        <div style="display: grid; gap: 8px; margin-bottom: 15px; font-size: 14px;">
-                            <div>📅 <strong>신청기간:</strong> ${notice.period || '확인 필요'}</div>
-                            <div>🔗 <a href="${notice.link}" style="color: #3498db;">공고 확인 →</a></div>
-                        </div>
-                        <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
-                            <div style="background: #e74c3c; color: white; padding: 8px 12px; border-radius: 6px; font-weight: bold; font-size: 14px;">📊 A+ (${notice.score || 85}점)</div>
-                            <div style="background: #3498db; color: white; padding: 8px 12px; border-radius: 6px; font-weight: bold; font-size: 14px;">🔥 확인 필요</div>
-                        </div>
-                        <div>
-                            <span style="background: #ecf0f1; color: #2c3e50; padding: 4px 8px; border-radius: 4px; font-size: 12px; margin-right: 5px;">#디자인</span>
-                            <span style="background: #ecf0f1; color: #2c3e50; padding: 4px 8px; border-radius: 4px; font-size: 12px; margin-right: 5px;">#브랜딩</span>
-                        </div>
-                    </div>
-                </div>
-            `).join('')}
-        </div>
+
         
         <!-- 푸터 -->
         <div style="margin-top: 40px; padding: 25px; background: #34495e; color: white; border-radius: 12px; text-align: center;">
