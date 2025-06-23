@@ -1571,13 +1571,10 @@ async function mainV51() {
  * v5.1 이메일 발송 함수 (기존 함수 개선)
  */
 async function sendEmailV51(subject, htmlContent) {
-    // 기존 sendEmail 함수와 동일한 로직
-    // 제목과 HTML 내용만 새로 받아서 처리
-    // 구체적 구현은 기존 코드 활용
     console.log('[v5.1] 메일 발송 중...');
     
-    // TODO: 기존 sendEmail 함수의 내용을 여기에 복사하고
-    // subject, htmlContent 파라미터 사용하도록 수정
+    // 기존 sendEmail 함수 호출
+    await sendEmail(htmlContent, subject);  // 파라미터 순서 주의!
     
     console.log('[v5.1] 메일 발송 완료');
 }
