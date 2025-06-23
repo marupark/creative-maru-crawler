@@ -3,10 +3,10 @@ name: 크리에이티브마루 지원사업 메일링
 
 on:
   # 수동 실행
-workflow_dispatch:  # 수동 실행 유지
-schedule:
-  - cron: '30 0 * * *'  # UTC 00:30 = KST 09:30 (하루 1회만)
-  # - cron: '0 1 * * *'   # 백업 스케줄 제거
+  workflow_dispatch:
+  # 자동 스케줄
+  schedule:
+    - cron: '30 0 * * *'  # UTC 00:30 = KST 09:30 (하루 1회만)
 
 jobs:
   send-email:
