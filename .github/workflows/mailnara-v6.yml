@@ -32,9 +32,11 @@ jobs:
         
     - name: 📦 의존성 설치 (안정화)
       run: |
-        echo "📦 의존성 설치 시작 (재시도 로직 포함)..."
-        npm cache clean --force
-        npm install --retry=3 --fetch-retry-mintimeout=20000 --fetch-retry-maxtimeout=120000
+        echo "📦 의존성 설치 시작..."
+        rm -f package-lock.json
+        npm install --no-package-lock
+        npm install --package-lock-only
+        npm install
         echo "✅ 의존성 설치 완료"
         
     - name: 🔍 환경 변수 확인
