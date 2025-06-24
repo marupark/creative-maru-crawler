@@ -38,9 +38,9 @@ jobs:
         # API 키
         BIZINFO_API_KEY: ${{ secrets.BIZINFO_API_KEY }}
         
-        # 이메일 설정 (v6.0과 동일)
-        EMAIL_USER: ${{ secrets.EMAIL_USER }}
-        EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+        # 이메일 설정 (기존 v6.0 secrets 활용)
+        EMAIL_USER: ${{ secrets.GMAIL_USER }}
+        EMAIL_PASS: ${{ secrets.GMAIL_PASSWORD }}
         
         # 테스트 모드
         TEST_MODE: ${{ github.event.inputs.test_mode || 'false' }}
