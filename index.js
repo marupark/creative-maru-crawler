@@ -127,30 +127,28 @@ function transformApiData(apiData) {
         });
     }
     
-    const filtered = items.filter(item => {
+const filtered = items
+    .filter(item => {
         return shouldIncludeNotice(
-            item.pblancNm || '', 
-            item.bsnsSumryCn || '', 
-            item.jrsdInsttNm || ''
+            item.policyNm || '', 
+            item.policyCn || '', 
+            item.cnstcDept || ''
         );
-    });
-    
-    // 나머지 코드...
-}
-        .map(item => ({
-            title: item.pblancNm || '제목 없음', 
-agency: item.jrsdInsttNm || '기관 정보 없음',
-period: `${item.reqstBeginEndDe || ''} ~ ${item.reqstBeginEndDe || ''}`,
-deadline: item.reqstBeginEndDe || '',
-link: item.pblancUrl || '#',
-summary: item.bsnsSumryCn ? item.bsnsSumryCn.substring(0, 200) + '...' : '내용 없음',
-            source: 'BizInfo_API_v7',
-            score: calculateScore(
-                item.policyNm || '', 
-                item.policyCn || '', 
-                item.cnstcDept || ''
-            )
-        }));
+    })
+    .map(item => ({
+        title: item.policyNm || '제목 없음',
+        agency: item.cnstcDept || '기관 정보 없음',
+        period: `${item.reqstBeginEndDe || ''} ~ ${item.reqstBeginEndDe || ''}`,
+        deadline: item.reqstBeginEndDe || '',
+        link: item.pblancUrl || '#',
+        summary: item.policyCn ? item.policyCn.substring(0, 200) + '...' : '내용 없음',
+        source: 'BizInfo_API_v7',
+        score: calculateScore(
+            item.policyNm || '', 
+            item.policyCn || '', 
+            item.cnstcDept || ''
+        )
+    }));
     
     console.log(`🎯 필터링 결과: ${filtered.length}개`);
     return filtered;
