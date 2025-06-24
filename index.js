@@ -71,20 +71,24 @@ function transformApiData(apiData) {
     const items = apiData.jsonArray;
     return items
         .map(item => {
-            const title = item.policyNm || item.pblancNm || '제목 없음';
-            const content = item.policyCn || item.cn || '내용 없음';
-            const agency = item.cnstcDept || item.jrsdInsttNm || item.author || item.excInsttNm || '기관 정보 없음';
-            return {
-                title,
-                agency,
-                period: `${item.reqstBeginDe || ''} ~ ${item.reqstEndDe || ''}`,
-                deadline: item.reqstEndDe || '',
-                link: item.pblancUrl || '#',
-                summary: content.substring(0, 200) + '...',
-                source: 'BizInfo_API_v7',
-                score: calculateScore(title, content, agency)
-            };
-        })
+    const title = item.policyNm || item.pblancNm || '제목 없음';
+    const content = item.policyCn || item.cn || '내용 없음';
+
+    // 🔄 agency 필드 우선순위 재조정
+    const agency = item.jrsdInsttNm || item.cnstcDept || item.author || item.excInsttNm || '기관 정보 없음';
+
+    return {
+        title,
+        agency,
+        period: `${item.reqstBeginDe || ''} ~ ${item.reqstEndDe || ''}`,
+        deadline: item.reqstEndDe || '',
+        link: item.pblancUrl || '#',
+        summary: content.substring(0, 200) + '...',
+        source: 'BizInfo_API_v7',
+        score: calculateScore(title, content, agency)
+    };
+})
+
         .filter(n => shouldIncludeNotice(n.title, n.summary, n.agency));
 }
 
