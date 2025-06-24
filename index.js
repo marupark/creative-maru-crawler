@@ -130,12 +130,12 @@ function calculateScore(title, content, agency) {
 
 // 데이터 변환 및 필터링
 function transformApiData(apiData) {
-    if (!apiData || !apiData.item) {
+    if (!apiData || !apiData.jsonArray) {
         console.log('❌ API 응답 데이터 구조가 예상과 다릅니다.');
         return [];
     }
     
-    const items = apiData.item || [];
+    const items = apiData.jsonArray || [];
     const itemsArray = Array.isArray(items) ? items : [items];
     
     console.log(`📊 원본 데이터: ${itemsArray.length}개`);
