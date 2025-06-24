@@ -170,7 +170,7 @@ async function crawlRIPC() {
                 agency: `RIPC ${센터}`,
                 period: 기간,
                 deadline: extractDeadline(기간),
-                link: `https://pms.ripc.org/pms/biz/applicant/notice/info.do?noticeSeq=${공고번호}`,
+                link: `https://pms.ripc.org/pms/biz/applicant/notice/list.do`,
                 summary: `${사업형태} ${제목}`,
                 source: 'RIPC_실제크롤링',
                 crawledAt: new Date().toISOString(),
