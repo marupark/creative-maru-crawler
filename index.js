@@ -40,20 +40,19 @@ async function getBizinfoAPI() {
         return null;
     }
     
-    const url = `https://api.bizinfo.go.kr/openapi/service/rest/PolicyNoticeService/getPolicyNotice`;
+    const url = `https://www.bizinfo.go.kr/uss/rss/bizinfoApi.do`;
     
     try {
         console.log('🔄 API 호출 시작...');
         
         const response = await axios.get(url, {
-            params: {
-                serviceKey: API_KEY,
-                pageNo: 1,
-                numOfRows: 100,
-                returnType: 'json'
-            },
-            timeout: 30000
-        });
+    params: {
+        crtfcKey: API_KEY,
+        dataType: 'json',
+        searchCnt: 100,
+        hashtags: '기술,디자인,경남'
+    }
+});
         
         console.log('✅ API 호출 성공');
         return response.data;
@@ -131,12 +130,12 @@ function calculateScore(title, content, agency) {
 
 // 데이터 변환 및 필터링
 function transformApiData(apiData) {
-    if (!apiData || !apiData.response || !apiData.response.body || !apiData.response.body.items) {
+    if (!apiData || !apiData.item) {
         console.log('❌ API 응답 데이터 구조가 예상과 다릅니다.');
         return [];
     }
     
-    const items = apiData.response.body.items.item || [];
+    const items = apiData.item || [];
     const itemsArray = Array.isArray(items) ? items : [items];
     
     console.log(`📊 원본 데이터: ${itemsArray.length}개`);
@@ -150,12 +149,12 @@ function transformApiData(apiData) {
             );
         })
         .map(item => ({
-            title: item.policyNm || '제목 없음',
-            agency: item.cnstcDept || '기관 정보 없음',
-            period: `${item.rceptBgndt || ''} ~ ${item.rceptEnddt || ''}`,
-            deadline: item.rceptEnddt || '',
-            link: item.policyItcmUrl || '#',
-            summary: item.policyCn ? item.policyCn.substring(0, 200) + '...' : '내용 없음',
+            title: item.pblancNm || '제목 없음', 
+agency: item.jrsdInsttNm || '기관 정보 없음',
+period: `${item.reqstBeginEndDe || ''} ~ ${item.reqstBeginEndDe || ''}`,
+deadline: item.reqstBeginEndDe || '',
+link: item.pblancUrl || '#',
+summary: item.bsnsSumryCn ? item.bsnsSumryCn.substring(0, 200) + '...' : '내용 없음',
             source: 'BizInfo_API_v7',
             score: calculateScore(
                 item.policyNm || '', 
