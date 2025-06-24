@@ -114,18 +114,29 @@ function transformApiData(apiData) {
     }
     
     const items = apiData.jsonArray || [];
-    const itemsArray = Array.isArray(items) ? items : [items];
+    console.log(`📊 원본 데이터: ${items.length}개`);
     
-    console.log(`📊 원본 데이터: ${itemsArray.length}개`);
+    // 🔍 첫 번째 항목의 실제 구조 확인
+    if (items.length > 0) {
+        console.log('🔍 첫 번째 항목 구조:');
+        console.log('Keys:', Object.keys(items[0]));
+        console.log('기관명 필드들:', {
+            jrsdInsttNm: items[0].jrsdInsttNm,
+            author: items[0].author,
+            excInsttNm: items[0].excInsttNm
+        });
+    }
     
-    const filtered = itemsArray
-        .filter(item => {
-            return shouldIncludeNotice(
-                item.policyNm || '', 
-                item.policyCn || '', 
-                item.cnstcDept || ''
-            );
-        })
+    const filtered = items.filter(item => {
+        return shouldIncludeNotice(
+            item.pblancNm || '', 
+            item.bsnsSumryCn || '', 
+            item.jrsdInsttNm || ''
+        );
+    });
+    
+    // 나머지 코드...
+}
         .map(item => ({
             title: item.pblancNm || '제목 없음', 
 agency: item.jrsdInsttNm || '기관 정보 없음',
