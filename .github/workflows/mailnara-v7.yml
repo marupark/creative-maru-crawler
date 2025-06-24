@@ -5,11 +5,6 @@ on:
     # 매일 오전 9시 (한국시간 기준) 실행
     - cron: '0 0 * * *'  # UTC 기준이므로 한국시간 9시는 UTC 0시
   workflow_dispatch:  # 수동 실행 가능
-    inputs:
-      test_mode:
-        description: '테스트 모드로 실행'
-        required: false
-        default: 'false'
 
 jobs:
   collect-and-send:
@@ -23,7 +18,6 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
-        cache: 'npm'
     
     - name: 📋 의존성 설치
       run: npm install
@@ -41,15 +35,11 @@ jobs:
         # 이메일 설정 (기존 v6.0 secrets 활용)
         EMAIL_USER: ${{ secrets.GMAIL_USER }}
         EMAIL_PASS: ${{ secrets.GMAIL_PASSWORD }}
-        
-        # 테스트 모드
-        TEST_MODE: ${{ github.event.inputs.test_mode || 'false' }}
       run: |
-        echo "🎯 MAILNARA v7.0 시작 - 3개 기관 타겟"
+        echo "🎯 MAILNARA v7.0 실제 운영 시작"
         echo "📋 타겟 기관: KIDP, RIPC, KOTRA"
         echo "🔑 API 키: ${BIZINFO_API_KEY:0:10}***"
         echo "📧 이메일: ${EMAIL_USER}"
-        echo "🧪 테스트 모드: $TEST_MODE"
         echo ""
         
         node index.js
@@ -57,7 +47,7 @@ jobs:
     - name: 📊 실행 결과 요약
       if: always()
       run: |
-        echo "✅ MAILNARA v7.0 실행 완료"
+        echo "✅ MAILNARA v7.0 실제 운영 실행 완료"
         echo "🔗 상세 로그는 위 단계에서 확인하세요"
         echo ""
         echo "📈 v7.0 개선사항:"
