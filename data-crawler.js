@@ -152,34 +152,36 @@ async function crawlRIPC() {
                 
                 const $ = cheerio.load(response.data);
                 
-                $('table tr').each((index, element) => {
-                    try {
-                        const $row = $(element);
-                        const title = $row.find('td').eq(1).text().trim();
-                        const agency = 'RIPC 지역지식재산센터';
-                        const period = $row.find('td').eq(3).text().trim();
-                        const link = $row.find('a').attr('href');
-                        
-                        if (title && title !== '제목' && title.length > 5) {
-                            const filterResult = shouldIncludeNotice(title, '', agency);
-                            
-                            const notice = {
-                                title: title,
-                                agency: agency,
-                                period: period,
-                                deadline: extractDeadline(period),
-                                link: link ? (link.startsWith('http') ? link : `https://pms.ripc.org${link}`) : '#',
-                                summary: `RIPC ${title}`,
-                                source: 'RIPC_실제크롤링',
-                                crawledAt: new Date().toISOString(),
-                                filterResult: filterResult
-                            };
-                            
-                            notices.push(notice);
-                        }
-                    } catch (err) {
-                        console.log(`RIPC 개별 공고 처리 오류: ${err.message}`);
-                    }
+                $('.table_area tr').each((index, element) => {
+                    if (index === 0) return;
+    
+    try {
+        const $row = $(element);
+        const 공고번호 = $row.find('td').eq(0).text().trim();
+        const 센터 = $row.find('td').eq(1).text().trim();
+        const 사업형태 = $row.find('td').eq(2).text().trim();
+        const 제목 = $row.find('td').eq(3).text().trim();
+        const 기간 = $row.find('td').eq(4).text().trim();
+        const 상태 = $row.find('td').eq(5).text().trim();
+        
+        if (제목 && 제목.length > 5) {
+            const notice = {
+                title: 제목,
+                agency: `RIPC ${센터}`,
+                period: 기간,
+                deadline: extractDeadline(기간),
+                link: `https://pms.ripc.org/pms/biz/applicant/notice/info.do?noticeSeq=${공고번호}`,
+                summary: `${사업형태} ${제목}`,
+                source: 'RIPC_실제크롤링',
+                crawledAt: new Date().toISOString(),
+                filterResult: shouldIncludeNotice(제목, 사업형태, 'RIPC')
+            };
+            
+            notices.push(notice);
+        }
+    } catch (err) {
+        console.log(`RIPC 개별 공고 처리 오류: ${err.message}`);
+    }
                 });
                 
                 console.log(`RIPC 페이지 ${page}: ${notices.length}개 공고 수집`);
