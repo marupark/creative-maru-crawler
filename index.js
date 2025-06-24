@@ -22,15 +22,10 @@ const coreKeywords = [
 
 // 타겟 기관 (3개 한정)
 const targetAgencies = [
-    '한국디자인진흥원',      // KIDP
-    '한국지식재산보호원',    // RIPC  
-    'KOTRA',               // KOTRA
-    '코트라',              // KOTRA 한글명
-    // 경남 지역 추가
-    '경남테크노파크',
-    '김해의생명산업진흥원',
-    '창원산업진흥원',
-    '경남지식재산센터'
+    '경상남도',           // 3개 공고 (우리 지역!)
+    '특허청',            // 1개 공고 (지식재산 관련)
+    '산업통상자원부',      // 11개 공고 (기술/수출 관련)
+    '중소벤처기업부'       // 5개 공고 (바우처 관련)
 ];
 // 지역 키워드
 const targetRegions = ['경남', '창원', '김해', '밀양', '부산', '울산', '전국'];
@@ -72,9 +67,12 @@ async function getBizinfoAPI() {
 }
 
 function shouldIncludeNotice(title, content, agency) {
-    console.log(`🔍 기관: "${agency}"`);
-    console.log(`🔍 제목: "${title}"`);
-    return true; // 모든 공고 통과
+    // 기관 필터만 적용 (키워드/지역 조건 제거)
+    const isTargetAgency = targetAgencies.some(targetAgency => 
+        agency.toLowerCase().includes(targetAgency.toLowerCase())
+    );
+    
+    return isTargetAgency;
 }
 
 // 점수 계산 (v6.0 시스템 재사용)
