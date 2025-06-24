@@ -71,34 +71,10 @@ async function getBizinfoAPI() {
     }
 }
 
-// 필터링 함수
 function shouldIncludeNotice(title, content, agency) {
-    const fullText = `${title} ${content}`.toLowerCase();
-    
-    // 1차: 기관 필터 (3개 기관만)
-    const isTargetAgency = targetAgencies.some(targetAgency => 
-        agency.toLowerCase().includes(targetAgency.toLowerCase())
-    );
-    
-    if (!isTargetAgency) {
-        return false;
-    }
-    
-    // 2차: 키워드 필터
-    const hasKeyword = coreKeywords.some(keyword => 
-        fullText.includes(keyword.toLowerCase())
-    );
-    
-    if (!hasKeyword) {
-        return false;
-    }
-    
-    // 3차: 지역 필터 (선택사항)
-    const hasRegion = targetRegions.some(region => 
-        fullText.includes(region.toLowerCase())
-    ) || fullText.includes('전국');
-    
-    return hasRegion;
+    console.log(`🔍 기관: "${agency}"`);
+    console.log(`🔍 제목: "${title}"`);
+    return true; // 모든 공고 통과
 }
 
 // 점수 계산 (v6.0 시스템 재사용)
