@@ -65,13 +65,13 @@ function transformApiData(apiData) {
 
     const filtered = apiData.jsonArray.map(item => {
         const title = item.policyNm || item.pblancNm || '제목 없음';
-        const content = item.policyCn || item.cn || '내용 없음';
-        const agency = item.cnstcDept || item.jrsdInsttNm || item.author || item.excInsttNm || '기관 정보 없음';
-
-        return {
-            title,
-            content,
-            agency,
+  const content = item.policyCn || item.cn || item.bizPlanCn || item.cont || '내용 없음';
+  const agency = item.cnstcDept || item.jrsdInsttNm || item.author || item.excInsttNm || item.orgNm || item.insttNm || '기관 정보 없음';
+  
+  return {
+    title,
+    content,
+    agency
             period: item.reqstBeginEndDe || '기간 없음',
             deadline: item.reqstBeginEndDe || '',
             link: item.pblancUrl || '#',
