@@ -5,6 +5,7 @@
 const fs = require('fs');
 const axios = require('axios');
 const cheerio = require('cheerio');
+const https = require('https');
 
 // ===== 1. 개선된 필터링 로직 (덜 엄격하게) =====
 function shouldIncludeNotice(title, content, agency) {
@@ -140,14 +141,14 @@ async function crawlRIPC() {
             
             try {
                 const response = await axios.get(url, {
-                    timeout: 10000,
-                    headers: {
-                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-                    },
-                    httpsAgent: new (require('https').Agent)({
-                        rejectUnauthorized: false
-                    })
-                });
+    timeout: 10000,
+    headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+    },
+    httpsAgent: new https.Agent({
+        rejectUnauthorized: false
+    })
+});
                 
                 const $ = cheerio.load(response.data);
                 
