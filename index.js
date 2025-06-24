@@ -170,7 +170,7 @@ function transformApiData(apiData) {
 
 // 메인 실행 함수
 async function runMailnaraV7() {
-    console.log('🚀 MAILNARA v7.0 시작');
+    console.log('🚀 MAILNARA v7.0 실제 운영 시작');
     console.log('🎯 타겟: 3개 기관 (KIDP, RIPC, KOTRA)');
     console.log('🔍 대상: 크리에이티브마루 맞춤 키워드');
     
