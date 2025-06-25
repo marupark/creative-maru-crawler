@@ -13,12 +13,11 @@ async function fetchDataFromAPI() {
 
     for (const org of TARGET_ORGS) {
         try {
-            const url = `https://www.bizinfo.go.kr/uf/bs/bsnsDtl.do?menuNo=200010&apiKey=${API_KEY}&insttNm=${encodeURIComponent(org)}`;
+            const url = `https://www.bizinfo.go.kr/uss/rss/bizinfoApi.do?crtfcKey=${API_KEY}&dataType=json&searchCondition=insttNm&searchKeyword=${encodeURIComponent(org)}`;
             const response = await axios.get(url);
 
             const items = response.data.body?.items || [];
 
-            // 디버깅용 로그 (한 번만 출력)
             let logOnce = false;
 
             const mapped = items.map(item => {
@@ -28,10 +27,10 @@ async function fetchDataFromAPI() {
                     logOnce = true;
                 }
 
-                const title = item.policyNm || item.pblancNm || '제목 없음';
-                const content = item.policyCn || item.bsnsSumryCn || item.cn || '내용 없음...';
-                const agency = item.cnstcDept || item.jrsdInsttNm || item.author || item.excInsttNm || '기관 정보 없음';
-                const period = item.reqstBeginEndDe || item.rceptPd || '기간 정보 없음';
+                const title = item.bsnmNm || item.pblancNm || '제목 없음';
+                const content = item.cn || item.bsnsSumryCn || '내용 없음';
+                const agency = item.jrsdInsttNm || item.cnstcInsttNm || item.author || '기관 정보 없음';
+                const period = item.rceptPd || item.reqstBeginEndDe || '기간 정보 없음';
                 const link = item.pblancUrl || item.rceptEngnHmpgUrl || '#';
 
                 const { score, keywords } = analyzeNoticeEnhanced(title, content, agency);
