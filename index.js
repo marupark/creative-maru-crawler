@@ -64,21 +64,24 @@ function transformApiData(apiData) {
     }
 
     const filtered = apiData.jsonArray.map(item => {
-        const title = item.policyNm || item.pblancNm || '제목 없음';
-        const content = item.policyCn || item.cn || item.bizPlanCn || item.cont || '내용 없음';
-        const agency = item.cnstcDept || item.jrsdInsttNm || item.author || item.excInsttNm || item.orgNm || item.insttNm || '기관 정보 없음';
+    const title = item.policyNm || item.pblancNm || '제목 없음';
 
-        return {
-            title,
-            content,
-            agency,
-            period: item.reqstBeginEndDe || '기간 없음',
-            deadline: item.reqstBeginEndDe || '',
-            link: item.pblancUrl || '#',
-            summary: content.substring(0, 200) + '...',
-            source: 'BizInfo_API',
-            score: calculateScore(title, content, agency)
-        };
+    const rawContent = item.policyCn || item.cn || item.bizPlanCn || item.cnCont || item.cnCn || item.cntrInfo || '';
+    const content = rawContent.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim() || '내용 없음';
+
+    const agency = item.cnstcDept || item.jrsdInsttNm || item.author || item.excInsttNm || item.orgNm || item.insttNm || '기관 정보 없음';
+
+    return {
+        title,
+        content,
+        agency,
+        period: item.reqstBeginEndDe || '기간 없음',
+        deadline: item.reqstBeginEndDe || '',
+        link: item.pblancUrl || '#',
+        summary: content.substring(0, 200) + '...',
+        source: 'BizInfo_API',
+        score: calculateScore(title, content, agency)
+    };
     }).filter(n => {
         return targetAgencies.some(ta => n.agency.includes(ta));
     });
