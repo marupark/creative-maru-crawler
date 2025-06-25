@@ -1,9 +1,8 @@
-// index.js - MAILNARA v7.1 메인 실행 파일
+// MAILNARA v7.2 디버그 패치 버전 (index.js)
 
 const axios = require('axios');
 const { sendNotificationEmail } = require('./send-email-v7');
 
-// 크리에이티브마루 맞춤 키워드
 const coreKeywords = [
     '디자인', '브랜딩', '브랜드', '리뉴얼', '홈페이지', '카탈로그',
     'ui/ux', 'uiux', 'gui', '웹사이트', '홍보물', '영상',
@@ -12,7 +11,6 @@ const coreKeywords = [
     '바우처', '지원사업', '수출', '글로벌', '혁신'
 ];
 
-// 필터링 기관 목록
 const targetAgencies = [
     '경상남도', '산업통상자원부', '중소벤처기업부', '특허청'
 ];
@@ -26,7 +24,8 @@ async function getBizinfoAPI() {
             params: {
                 crtfcKey: API_KEY,
                 dataType: 'json',
-                searchCnt: 100
+                searchCnt: 100,
+                cache: false // 캐시 무효화
             }
         });
         console.log('✅ API 호출 성공');
@@ -63,15 +62,22 @@ function transformApiData(apiData) {
         return [];
     }
 
+    apiData.jsonArray.slice(0, 3).forEach((item, idx) => {
+        console.log(`📦 [샘플 ${idx + 1}] 필드 목록:`, Object.keys(item));
+    });
+
     const filtered = apiData.jsonArray.map(item => {
         const title = item.pblancNm || item.policyNm || '제목 없음';
-
-        // ✅ 내용 필드 확정: bsnsSumryCn
-        const rawContent = item.bsnsSumryCn || '';
+        const rawContent = item.bsnsSumryCn || ''; // 확인된 본문 필드
         const content = rawContent.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim() || '내용 없음';
-
-        // ✅ 기관 필드 보정
         const agency = item.jrsdInsttNm || item.excInsttNm || '기관 정보 없음';
+
+        console.log('🧪 디버그:', {
+            title,
+            agency,
+            rawContent: rawContent.substring(0, 100),
+            content: content.substring(0, 100)
+        });
 
         return {
             title,
@@ -93,7 +99,7 @@ function transformApiData(apiData) {
 }
 
 async function runMailnaraV7() {
-    console.log('🚀 MAILNARA v7.1 실행 시작');
+    console.log('🚀 MAILNARA v7.2 디버그 실행 시작');
 
     const apiData = await getBizinfoAPI();
     if (!apiData) return { success: false };
@@ -114,7 +120,6 @@ async function runMailnaraV7() {
     };
 }
 
-// 직접 실행
 if (require.main === module) {
     runMailnaraV7();
 }
