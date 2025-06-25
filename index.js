@@ -62,7 +62,10 @@ function transformApiData(apiData) {
         console.log('❌ 잘못된 데이터 구조');
         return [];
     }
-
+    // ✅ 여기 추가!
+    apiData.jsonArray.slice(0, 3).forEach((item, idx) => {
+        console.log(`📦 [샘플 ${idx + 1}] 필드 목록:`, Object.keys(item));
+    });
     const filtered = apiData.jsonArray.map(item => {
     const title = item.policyNm || item.pblancNm || '제목 없음';
 
