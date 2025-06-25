@@ -9,13 +9,9 @@ const API_KEY = process.env.BIZINFO_API_KEY;
 
 // ✅ 기업마당 API에서 인식 가능한 실제 기관명들로 교체
 const TARGET_ORGS = [
-    '한국디자인진흥원',
-    '경남지식재산센터',
-    '대한무역투자진흥공사',
-    '경상남도청',
-    '중소벤처기업부',
-    '산업통상자원부',
-    '특허청'
+  '한국디자인진흥원',
+  '경남지식재산센터',
+  '대한무역투자진흥공사'
 ];
 
 async function fetchDataFromAPI() {
@@ -23,7 +19,7 @@ async function fetchDataFromAPI() {
 
     for (const org of TARGET_ORGS) {
         try {
-            const url = `https://www.bizinfo.go.kr/uss/rss/bizinfoApi.do?crtfcKey=${API_KEY}&dataType=json&searchCnt=30&insttNm=${encodeURIComponent(org)}`;
+            const url = `https://www.bizinfo.go.kr/uss/rss/bizinfoApi.do?crtfcKey=${API_KEY}&dataType=json&searchCnt=50&insttNm=${encodeURIComponent(org)}`;
             const response = await axios.get(url);
 
             const items = response.data?.items || [];
