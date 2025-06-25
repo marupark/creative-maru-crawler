@@ -1,9 +1,9 @@
-// index.js - MAILNARA v7.2 디버그 패치
+// index.js - MAILNARA v7.2 최종 디버그 패치본
 
 const axios = require('axios');
 const { sendNotificationEmail } = require('./send-email-v7');
 
-// 핵심 키워드
+// 크리에이티브마루 맞춤 키워드
 const coreKeywords = [
     '디자인', '브랜딩', '브랜드', '리뉴얼', '홈페이지', '카탈로그',
     'ui/ux', 'uiux', 'gui', '웹사이트', '홍보물', '영상',
@@ -12,7 +12,7 @@ const coreKeywords = [
     '바우처', '지원사업', '수출', '글로벌', '혁신'
 ];
 
-// 타겟 기관
+// 필터링 기관 목록
 const targetAgencies = [
     '경상남도', '산업통상자원부', '중소벤처기업부', '특허청'
 ];
@@ -68,12 +68,6 @@ function transformApiData(apiData) {
         const content = item.bsnsSumryCn || item.policyCn || item.cn || item.bizPlanCn || item.cont || '내용 없음';
         const agency = item.cnstcDept || item.jrsdInsttNm || item.author || item.excInsttNm || item.orgNm || item.insttNm || '기관 정보 없음';
 
-        console.log('🧪 확인용 샘플:', {
-            title,
-            agency,
-            content: content.substring(0, 80)
-        });
-
         return {
             title,
             content,
@@ -81,12 +75,15 @@ function transformApiData(apiData) {
             period: item.reqstBeginEndDe || '기간 없음',
             deadline: item.reqstBeginEndDe || '',
             link: item.pblancUrl || '#',
-            summary: content.substring(0, 200) + '...',
+            summary: (content && content !== '내용 없음') ? content.substring(0, 200) + '...' : '',
             source: 'BizInfo_API',
             score: calculateScore(title, content, agency)
         };
     }).filter(n => {
-        return targetAgencies.some(ta => n.agency.includes(ta));
+        return (
+            targetAgencies.some(ta => n.agency.includes(ta)) &&
+            n.content !== '내용 없음'
+        );
     });
 
     console.log(`🎯 필터링 결과: ${filtered.length}개`);
@@ -115,7 +112,6 @@ async function runMailnaraV7() {
     };
 }
 
-// 실행 진입점
 if (require.main === module) {
     runMailnaraV7();
 }
