@@ -62,29 +62,28 @@ function transformApiData(apiData) {
         console.log('❌ 잘못된 데이터 구조');
         return [];
     }
-    // ✅ 여기 추가!
-    apiData.jsonArray.slice(0, 3).forEach((item, idx) => {
-        console.log(`📦 [샘플 ${idx + 1}] 필드 목록:`, Object.keys(item));
-    });
+
     const filtered = apiData.jsonArray.map(item => {
-    const title = item.policyNm || item.pblancNm || '제목 없음';
+        const title = item.pblancNm || item.policyNm || '제목 없음';
 
-    const rawContent = item.policyCn || item.cn || item.bizPlanCn || item.cnCont || item.cnCn || item.cntrInfo || '';
-    const content = rawContent.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim() || '내용 없음';
+        // ✅ 내용 필드 확정: bsnsSumryCn
+        const rawContent = item.bsnsSumryCn || '';
+        const content = rawContent.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim() || '내용 없음';
 
-    const agency = item.cnstcDept || item.jrsdInsttNm || item.author || item.excInsttNm || item.orgNm || item.insttNm || '기관 정보 없음';
+        // ✅ 기관 필드 보정
+        const agency = item.jrsdInsttNm || item.excInsttNm || '기관 정보 없음';
 
-    return {
-        title,
-        content,
-        agency,
-        period: item.reqstBeginEndDe || '기간 없음',
-        deadline: item.reqstBeginEndDe || '',
-        link: item.pblancUrl || '#',
-        summary: content.substring(0, 200) + '...',
-        source: 'BizInfo_API',
-        score: calculateScore(title, content, agency)
-    };
+        return {
+            title,
+            content,
+            agency,
+            period: item.reqstBeginEndDe || '기간 없음',
+            deadline: item.reqstBeginEndDe || '',
+            link: item.pblancUrl || '#',
+            summary: content.substring(0, 200) + '...',
+            source: 'BizInfo_API',
+            score: calculateScore(title, content, agency)
+        };
     }).filter(n => {
         return targetAgencies.some(ta => n.agency.includes(ta));
     });
@@ -92,7 +91,6 @@ function transformApiData(apiData) {
     console.log(`🎯 필터링 결과: ${filtered.length}개`);
     return filtered;
 }
-
 
 async function runMailnaraV7() {
     console.log('🚀 MAILNARA v7.1 실행 시작');
