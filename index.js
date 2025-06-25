@@ -1,123 +1,71 @@
-// index.js - MAILNARA v7.2 최종 디버그 패치본
+// index.js - MAILNARA v7.2 디버그 패치 포함
 
 const axios = require('axios');
 const { sendNotificationEmail } = require('./send-email-v7');
+const { analyzeNoticeEnhanced } = require('./analyze');
+require('dotenv').config();
 
-// 크리에이티브마루 맞춤 키워드
-const coreKeywords = [
-    '디자인', '브랜딩', '브랜드', '리뉴얼', '홈페이지', '카탈로그',
-    'ui/ux', 'uiux', 'gui', '웹사이트', '홍보물', '영상',
-    '시각디자인', 'bi', 'ci', '패키지디자인',
-    '광고', '프로모션', '브랜드마케팅', '디지털마케팅',
-    '바우처', '지원사업', '수출', '글로벌', '혁신'
-];
+const API_KEY = process.env.BIZINFO_API_KEY;
+const TARGET_ORGS = ['KIDP', 'RIPC', 'KOTRA'];
 
-// 필터링 기관 목록
-const targetAgencies = [
-    '경상남도', '산업통상자원부', '중소벤처기업부', '특허청'
-];
+async function fetchDataFromAPI() {
+    const allItems = [];
 
-async function getBizinfoAPI() {
-    const API_KEY = process.env.BIZINFO_API_KEY;
-    const url = 'https://www.bizinfo.go.kr/uss/rss/bizinfoApi.do';
+    for (const org of TARGET_ORGS) {
+        try {
+            const url = `https://www.bizinfo.go.kr/uf/bs/bsnsDtl.do?menuNo=200010&apiKey=${API_KEY}&insttNm=${encodeURIComponent(org)}`;
+            const response = await axios.get(url);
 
-    try {
-        const response = await axios.get(url, {
-            params: {
-                crtfcKey: API_KEY,
-                dataType: 'json',
-                searchCnt: 100
-            }
-        });
-        console.log('✅ API 호출 성공');
-        return response.data;
-    } catch (error) {
-        console.error('❌ API 호출 실패:', error.message);
-        return null;
-    }
-}
+            const items = response.data.body?.items || [];
 
-function calculateScore(title, content, agency) {
-    let score = 20;
-    const text = `${title} ${content}`.toLowerCase();
+            // 디버깅용 로그 (한 번만 출력)
+            let logOnce = false;
 
-    const keywordWeights = {
-        '디자인': 15, '브랜딩': 15, '홈페이지': 12,
-        '카탈로그': 10, 'ui/ux': 13, '수출': 7,
-        '혁신': 6, '경남': 6, '전국': 3
-    };
+            const mapped = items.map(item => {
+                if (!logOnce) {
+                    console.log('📦 [DEBUG] 원본 item 필드 전체:', Object.keys(item));
+                    console.log('📦 [DEBUG] 원본 item 내용 전체:\n', JSON.stringify(item, null, 2));
+                    logOnce = true;
+                }
 
-    Object.entries(keywordWeights).forEach(([kw, w]) => {
-        if (text.includes(kw.toLowerCase())) score += w;
-    });
+                const title = item.policyNm || item.pblancNm || '제목 없음';
+                const content = item.policyCn || item.bsnsSumryCn || item.cn || '내용 없음...';
+                const agency = item.cnstcDept || item.jrsdInsttNm || item.author || item.excInsttNm || '기관 정보 없음';
+                const period = item.reqstBeginEndDe || item.rceptPd || '기간 정보 없음';
+                const link = item.pblancUrl || item.rceptEngnHmpgUrl || '#';
 
-    if (agency.includes('산업통상자원부')) score += 8;
-    if (agency.includes('경상남도')) score += 10;
+                const { score, keywords } = analyzeNoticeEnhanced(title, content, agency);
 
-    return Math.min(score, 100);
-}
+                return {
+                    title,
+                    content,
+                    summary: content,
+                    agency,
+                    period,
+                    link,
+                    score,
+                    keywords
+                };
+            });
 
-function transformApiData(apiData) {
-    if (!apiData || !apiData.jsonArray) {
-        console.log('❌ 잘못된 데이터 구조');
-        return [];
+            allItems.push(...mapped);
+        } catch (error) {
+            console.error(`❌ ${org} API 호출 실패:`, error.message);
+        }
     }
 
-    const filtered = apiData.jsonArray.map(item => {
-        const title = item.policyNm || item.pblancNm || '제목 없음';
-        const content = item.bsnsSumryCn || item.policyCn || item.cn || item.bizPlanCn || item.cont || '내용 없음';
-        const agency = item.cnstcDept || item.jrsdInsttNm || item.author || item.excInsttNm || item.orgNm || item.insttNm || '기관 정보 없음';
-
-        return {
-            title,
-            content,
-            agency,
-            period: item.reqstBeginEndDe || '기간 없음',
-            deadline: item.reqstBeginEndDe || '',
-            link: item.pblancUrl || '#',
-            summary: (content && content !== '내용 없음') ? content.substring(0, 200) + '...' : '',
-            source: 'BizInfo_API',
-            score: calculateScore(title, content, agency)
-        };
-    }).filter(n => {
-        return (
-            targetAgencies.some(ta => n.agency.includes(ta)) &&
-            n.content !== '내용 없음'
-        );
-    });
-
-    console.log(`🎯 필터링 결과: ${filtered.length}개`);
-    return filtered;
+    return allItems;
 }
 
-async function runMailnaraV7() {
+async function main() {
     console.log('🚀 MAILNARA v7.2 실행 시작');
+    const notices = await fetchDataFromAPI();
+    console.log(`🎯 필터링 결과: ${notices.length}개`);
 
-    const apiData = await getBizinfoAPI();
-    if (!apiData) return { success: false };
-
-    const notices = transformApiData(apiData);
-    console.log(`📊 수집된 공고 수: ${notices.length}`);
-
-    if (notices.length > 0) {
-        const emailSent = await sendNotificationEmail(notices);
-        console.log(emailSent ? '✅ 메일 전송 완료' : '⚠️ 메일 전송 실패');
-    } else {
-        console.log('🔍 조건에 맞는 공고가 없습니다.');
+    const success = await sendNotificationEmail(notices);
+    if (!success) {
+        console.error('⚠️ 메일 전송 실패');
     }
-
-    return {
-        success: true,
-        total: notices.length
-    };
 }
 
-if (require.main === module) {
-    runMailnaraV7();
-}
-
-module.exports = {
-    runMailnaraV7,
-    getBizinfoAPI,
-    transformApiData
-};
+main();
