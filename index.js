@@ -3,11 +3,22 @@ const axios = require('axios');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
-// ✅ [1] 정책 데이터 수집
+// ✅ [1] 공고 수집 (POST 방식 - 안정 버전)
 async function getNoticesFromAPI() {
   try {
-    const res = await axios.get('https://www.bizinfo.go.kr/uss/rss/bizinfoApi.do');
-    const items = res.data?.body?.items || [];
+    const url = 'https://www.bizinfo.go.kr/cmm/fms/BizInfoMList.do';
+    const formData = new URLSearchParams({
+      pageIndex: '1',
+      searchBizSeCd: '',     // 전체 분류
+      searchCondition: '01', // 제목
+      searchKeyword: '',     // 전체 검색
+    });
+
+    const res = await axios.post(url, formData, {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    });
+
+    const items = res.data?.resultList || [];
     console.log(`✅ API 호출 완료: ${items.length}건`);
     return items;
   } catch (err) {
@@ -45,9 +56,9 @@ async function sendEmail(data) {
        <ul>
          ${data.map(n => `
            <li>
-             <b>${removeEmoji(n.title)}</b><br>
-             ${removeEmoji(n.agency)}<br>
-             <a href="${n.link || '#'}" target="_blank">공고 확인</a>
+             <b>${removeEmoji(n.pblancNm)}</b><br>
+             ${removeEmoji(n.jrsdInsttNm || '기관 미상')}<br>
+             <a href="${n.pblancUrl || '#'}" target="_blank">공고 확인</a>
            </li>
          `).join('')}
        </ul>
@@ -74,20 +85,9 @@ async function sendEmail(data) {
   fs.writeFileSync('./notices.json', JSON.stringify(notices, null, 2));
   console.log('📁 notices.json 저장 완료');
 
-  // 공고 구조 정리 (점수 없음)
-  const formatted = notices.map((item, i) => {
-    return {
-      title: removeEmoji(item.policyNm || item.pblancNm || `제목 없음 ${i}`),
-      content: removeEmoji(item.policyCn || item.cn || ''),
-      agency: removeEmoji(item.cnstcDept || item.jrsdInsttNm || item.author || item.excInsttNm || '기관 미상'),
-      link: item.link || item.pblancUrl || '#',
-    };
+  notices.forEach((n, i) => {
+    console.log(`[${i + 1}] ${removeEmoji(n.pblancNm)} | ${removeEmoji(n.jrsdInsttNm || '')}`);
   });
 
-  // 로그로 확인
-  formatted.forEach((n, i) => {
-    console.log(`[${i + 1}] ${n.title} | ${n.agency}`);
-  });
-
-  await sendEmail(formatted);
+  await sendEmail(notices);
 })();
