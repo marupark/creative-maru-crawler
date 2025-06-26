@@ -9,7 +9,7 @@ const API_KEY = process.env.BIZINFO_API_KEY;
 const org = ''; // 전체 검색: '' / 특정 기관 예: '경남테크노파크'
 
 async function getNoticesFromAPI() {
-  const url = `https://www.bizinfo.go.kr/uss/rss/bizinfoApi.do?crtfcKey=${API_KEY}&dataType=xml&searchCnt=100&insttNm=${encodeURIComponent(org)}`;
+  const url = `https://www.bizinfo.go.kr/uss/rss/bizinfoApi.do?crtfcKey=${process.env.BIZINFO_API_KEY}&dataType=xml&searchCnt=20`;
 
   try {
     const res = await axios.get(url);
