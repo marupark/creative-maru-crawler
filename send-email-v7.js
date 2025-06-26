@@ -50,7 +50,7 @@ async function sendNotificationEmail(notices) {
 
   const mailOptions = {
     from: `MAILNARA v7.2 <${process.env.EMAIL_USER}>`,
-    to: process.env.EMAIL_USER,
+    to: 'pm@cmaru.com',
     subject: removeEmojis(`MAILNARA v7.2 지원사업 알림 - ${new Date().toLocaleDateString('ko-KR')}`),
     text: safeBody,
     headers: {
