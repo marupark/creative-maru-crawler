@@ -79,14 +79,10 @@ async function sendEmail(data) {
 }
 
 // ✅ [4] 실행 흐름
+// ✅ [4] 실행 흐름 (TEST MODE: 수동 JSON 로딩)
 (async () => {
-  const notices = await getNoticesFromAPI();
-  fs.writeFileSync('./notices.json', JSON.stringify(notices, null, 2));
-  console.log('📁 notices.json 저장 완료');
-
-  notices.forEach((n, i) => {
-    console.log(`[${i + 1}] ${removeEmoji(n.pblancNm)} | ${removeEmoji(n.jrsdInsttNm || '')}`);
-  });
+  const notices = JSON.parse(fs.readFileSync('./notices.json', 'utf-8'));
+  console.log(`📊 테스트용 수동 데이터 ${notices.length}건 로딩됨`);
 
   await sendEmail(notices);
 })();
