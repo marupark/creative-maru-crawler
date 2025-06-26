@@ -21,7 +21,7 @@ async function fetchDataFromAPI() {
     try {
       const url = `https://www.bizinfo.go.kr/uss/rss/bizinfoApi.do?crtfcKey=${API_KEY}&dataType=json&searchCnt=50&insttNm=${encodeURIComponent(org)}`;
       const response = await axios.get(url);
-
+      console.log('[DEBUG] 실제 API 응답 구조:\n', JSON.stringify(response.data, null, 2));
       const items = response.data?.body?.items || [];
 
       // 📋 디버그 출력 (기관별 최초 1회만 출력)
