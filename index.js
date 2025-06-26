@@ -43,6 +43,7 @@ async function sendEmail(analyzed, totalCount) {
     auth: {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
+      to: process.env.RECIPIENT_EMAIL || 'pm@cmaru.com',
     },
   });
 
