@@ -1,26 +1,25 @@
 const fs = require('fs');
 const axios = require('axios');
+const xml2js = require('xml2js');
 const nodemailer = require('nodemailer');
 require('dotenv').config();
 
-// ✅ [1] 공고 수집 (POST 방식 - 안정 버전)
+// ✅ [1] 공고 수집 (GET + XML 파싱 방식)
+const API_KEY = process.env.BIZINFO_API_KEY;
+const org = ''; // 전체 검색: '' / 특정 기관 예: '경남테크노파크'
+
 async function getNoticesFromAPI() {
+  const url = `https://www.bizinfo.go.kr/uss/rss/bizinfoApi.do?crtfcKey=${API_KEY}&dataType=xml&searchCnt=100&insttNm=${encodeURIComponent(org)}`;
+
   try {
-    const url = 'https://www.bizinfo.go.kr/cmm/fms/BizInfoMList.do';
-    const formData = new URLSearchParams({
-      pageIndex: '1',
-      searchBizSeCd: '',     // 전체 분류
-      searchCondition: '01', // 제목
-      searchKeyword: '',     // 전체 검색
-    });
+    const res = await axios.get(url);
+    const parser = new xml2js.Parser({ explicitArray: false });
+    const json = await parser.parseStringPromise(res.data);
 
-    const res = await axios.post(url, formData, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    });
-
-    const items = res.data?.resultList || [];
-    console.log(`✅ API 호출 완료: ${items.length}건`);
-    return items;
+    const items = json?.response?.body?.items?.item || [];
+    const result = Array.isArray(items) ? items : [items];
+    console.log(`✅ API 호출 완료: ${result.length}건`);
+    return result;
   } catch (err) {
     console.error('❌ API 호출 실패:', err.message);
     return [];
