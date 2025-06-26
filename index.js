@@ -46,22 +46,22 @@ async function sendEmail(data) {
   console.log('📨 수신자 확인:', recipient);
 
   const htmlBody = data.length === 0
-    ? `<h3>MAILNARA v7.2 지원사업 알림</h3>
-       <p>총 수집: 0건</p>
-       <p>조건에 맞는 공고가 없습니다. 내일 다시 확인해보세요.</p>
-       <br><small>본 메일은 자동화 시스템 MAILNARA v7.2에 의해 발송되었습니다.</small>`
-    : `<h3>MAILNARA v7.2 지원사업 알림</h3>
-       <p>총 수집: ${data.length}건</p>
-       <ul>
-         ${data.map(n => `
-           <li>
-             <b>${removeEmoji(n.pblancNm)}</b><br>
-             ${removeEmoji(n.jrsdInsttNm || '기관 미상')}<br>
-             <a href="${n.pblancUrl || '#'}" target="_blank">공고 확인</a>
-           </li>
-         `).join('')}
-       </ul>
-       <br><small>본 메일은 자동화 시스템 MAILNARA v7.2에 의해 발송되었습니다.</small>`;
+  ? `<h3>MAILNARA v7.2 지원사업 알림</h3>
+     <p>총 수집: 0건</p>
+     <p>조건에 맞는 공고가 없습니다. 내일 다시 확인해보세요.</p>
+     <br><small>본 메일은 자동화 시스템 MAILNARA v7.2에 의해 발송되었습니다.</small>`
+  : `<h3>MAILNARA v7.2 지원사업 알림</h3>
+     <p>총 수집: ${data.length}건</p>
+     <ul>
+       ${data.map(n => `
+         <li>
+           <b>${removeEmoji(n.policyNm || n.pblancNm || '제목 없음')}</b><br>
+           ${removeEmoji(n.jrsdInsttNm || '기관 미상')}<br>
+           <a href="${n.link || n.pblancUrl || '#'}" target="_blank">공고 확인</a>
+         </li>
+       `).join('')}
+     </ul>
+     <br><small>본 메일은 자동화 시스템 MAILNARA v7.2에 의해 발송되었습니다.</small>`;
 
   const mailOptions = {
     from: `"MAILNARA" <${process.env.EMAIL_USER}>`,
