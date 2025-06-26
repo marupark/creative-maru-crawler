@@ -1,71 +1,94 @@
-// send-email-v7.js - 이모지 제거 + 인코딩 안전 버전
-
+const fs = require('fs');
 const nodemailer = require('nodemailer');
+require('dotenv').config();
 
-// 이모지 제거 함수 (전체 범위 커버)
-function removeEmojis(text) {
-  return text
-    .replace(/[\u{1F600}-\u{1F64F}]/gu, '') // 이모지: 얼굴
-    .replace(/[\u{1F300}-\u{1F5FF}]/gu, '') // 이모지: 심볼
-    .replace(/[\u{1F680}-\u{1F6FF}]/gu, '') // 이모지: 운송/지도
-    .replace(/[\u{2600}-\u{26FF}]/gu, '')   // 기타
-    .replace(/[\u{2700}-\u{27BF}]/gu, '')   // 기타
-    .replace(/[\u{1F900}-\u{1F9FF}]/gu, '') // 이모지: 확장
-    .replace(/[\u{1FA70}-\u{1FAFF}]/gu, '') // 이모지: 손동작 등
-    .replace(/[\u{200D}\u{FE0F}]/gu, '');    // 조합자 제거
-}
+const { analyzeNotices } = require('./analyze');
+const notices = require('./notices.json');
 
-async function sendNotificationEmail(notices) {
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
-    }
+// 이모지 제거 함수
+const removeEmoji = text => {
+  if (!text || typeof text !== 'string') return '';
+  return text.replace(/[\p{Emoji_Presentation}\p{Emoji}\uFE0F]/gu, '');
+};
+
+// 제목/내용/기관 정리
+const formatNotices = (data) => {
+  return data.map((item, index) => {
+    const title = removeEmoji(item.policyNm || item.pblancNm || `제목 없음 #${index}`);
+    const content = removeEmoji(item.policyCn || item.cn || '내용 없음');
+    const agency = removeEmoji(item.cnstcDept || item.jrsdInsttNm || item.author || item.excInsttNm || '기관 정보 없음');
+    return { title, content, agency };
   });
+};
 
-  const highScoreNotices = notices.filter(n => n.score >= 70);
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.MAIL_USER, // ex: cmaru.bot@gmail.com
+    pass: process.env.MAIL_PASS,
+  },
+});
 
-  let body = `MAILNARA v7.2 지원사업 알림\n`;
-  body += `총 수집: ${notices.length}건 / 고득점(70점↑): ${highScoreNotices.length}건\n\n`;
-
-  if (highScoreNotices.length === 0) {
-    body += `조건에 맞는 공고가 없습니다. 내일 다시 확인해보세요.\n`;
-  } else {
-    highScoreNotices.forEach(n => {
-      body += `------------------------------\n`;
-      body += `📌 제목: ${n.title}\n`;
-      body += `🏢 기관: ${n.agency}\n`;
-      body += `🗓️ 기간: ${n.period}\n`;
-      body += `🔗 링크: ${n.link}\n`;
-      body += `💯 점수: ${n.score}점\n`;
-      body += `\n`;
-    });
+const generateEmailBody = (analyzed) => {
+  if (analyzed.length === 0) {
+    return `
+      <h3>MAILNARA v7.2 지원사업 알림</h3>
+      <p>총 수집: ${notices.length}건 / 고득점(70점↑): 0건</p>
+      <p>조건에 맞는 공고가 없습니다. 내일 다시 확인해보세요.</p>
+      <br><br>
+      <small>본 메일은 자동화 시스템 MAILNARA v7.2에 의해 발송되었습니다.</small>
+    `;
   }
 
-  body += `\n본 메일은 자동화 시스템 MAILNARA v7.2에 의해 발송되었습니다.`;
+  const lines = analyzed.map((n, i) => {
+    return `
+      <li>
+        <b>${removeEmoji(n.title)}</b><br>
+        ${removeEmoji(n.agency)} / 점수: ${n.score}<br>
+        <a href="${n.link || '#'}" target="_blank">공고 확인</a>
+      </li>
+    `;
+  });
 
-  // 이모지 및 줄바꿈 처리
-  const safeBody = removeEmojis(body).replace(/\r\n/g, '\n');
+  return `
+    <h3>MAILNARA v7.2 지원사업 알림</h3>
+    <p>총 수집: ${notices.length}건 / 고득점(70점↑): ${analyzed.length}건</p>
+    <ul>${lines.join('')}</ul>
+    <br><br>
+    <small>본 메일은 자동화 시스템 MAILNARA v7.2에 의해 발송되었습니다.</small>
+  `;
+};
+
+const main = async () => {
+  const formatted = formatNotices(notices);
+  const analyzed = formatted.map(item => {
+    const result = analyzeNotices(item.title, item.content, item.agency);
+    return { ...item, ...result };
+  });
+
+  // 디버깅 로그
+  analyzed.forEach((a, i) => {
+    console.log(`[${i + 1}] ${a.title} | ${a.agency} | 점수: ${a.score}`);
+  });
+
+  // 필터링 (우선순위 점수 기준)
+  const highPriority = analyzed.filter(n => n.score >= 70);
+
+  const htmlBody = generateEmailBody(highPriority);
 
   const mailOptions = {
-    from: `MAILNARA v7.2 <${process.env.EMAIL_USER}>`,
-    to: 'pm@cmaru.com',
-    subject: removeEmojis(`MAILNARA v7.2 지원사업 알림 - ${new Date().toLocaleDateString('ko-KR')}`),
-    text: safeBody,
-    headers: {
-      'Content-Type': 'text/plain; charset=UTF-8'
-    }
+    from: `"MAILNARA v7.2" <${process.env.MAIL_USER}>`,
+    to: pm@cmaru.com, // 예: pm@cmaru.com
+    subject: `MAILNARA v7.2 지원사업 알림 - ${new Date().toISOString().split('T')[0]}`,
+    html: htmlBody,
   };
 
   try {
     const info = await transporter.sendMail(mailOptions);
-    console.log(`✅ 메일 발송 성공: ${info.messageId}`);
-    return true;
-  } catch (error) {
-    console.error('❌ 메일 발송 실패:', error);
-    return false;
+    console.log('✅ 메일 발송 완료:', info.messageId);
+  } catch (err) {
+    console.error('❌ 메일 발송 실패:', err);
   }
-}
+};
 
-module.exports = { sendNotificationEmail };
+main();
