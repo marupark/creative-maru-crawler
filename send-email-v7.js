@@ -78,7 +78,7 @@ const main = async () => {
 
   const mailOptions = {
     from: `"MAILNARA v7.2" <${process.env.MAIL_USER}>`,
-    to: pm@cmaru.com, // 예: pm@cmaru.com
+    to: process.env.MAIL_RECEIVER, // 예: pm@cmaru.com
     subject: `MAILNARA v7.2 지원사업 알림 - ${new Date().toISOString().split('T')[0]}`,
     html: htmlBody,
   };
