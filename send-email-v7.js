@@ -46,7 +46,7 @@ async function sendNotificationEmail(notices) {
   try {
     const info = await transporter.sendMail({
       from: `"MAILNARA" <${process.env.EMAIL_USER}>`,
-      to: process.env.EMAIL_USER,
+      to: process.env.EMAIL_TO || 'pm@cmaru.com', // 여기 기본값을 명시
       subject: '📮 MAILNARA 지원사업 알림',
       html
     });
