@@ -1,66 +1,50 @@
-// MAILNARA v7.3 with Scoring System
+// index.js 최종판 (경남 필터링 적용)
+
 const fs = require('fs');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 const { XMLParser } = require('fast-xml-parser');
 require('dotenv').config();
 
-// ✅ 점수 계산 함수
-function calculateScore(title = '', content = '', agency = '') {
-  const keywords = {
-    '바우처': 15,
-    '창원': 10,
-    '수출': 10,
-    '디자인': 8,
-    '진흥원': 5,
-    '홈페이지': 5,
-    '브랜딩': 5
-  };
-  let score = 0;
+// ✅ 경남 관련 키워드 리스트
+const regionKeywords = ['경남', '창원', '김해', '진주', '양산', '사천', '통영', '거제', '밀양', '함안', '거창', '산청', '의령'];
+
+function isGyeongnamRelated(title, content, agency) {
   const text = `${title} ${content} ${agency}`;
-  for (const [word, point] of Object.entries(keywords)) {
-    if (text.includes(word)) score += point;
-  }
-  return score;
+  return regionKeywords.some(keyword => text.includes(keyword));
 }
 
-// ✅ 이모지 제거 함수
-function removeEmoji(text) {
-  return (text || '').replace(/[\p{Emoji}\uFE0F]/gu, '');
-}
+const removeEmoji = text => {
+  if (!text || typeof text !== 'string') return '';
+  return text.replace(/[\p{Emoji_Presentation}\p{Emoji}\uFE0F]/gu, '');
+};
 
-// ✅ 공고 수집
 async function getNoticesFromAPI() {
   try {
     const API_KEY = process.env.BIZINFO_API_KEY;
     const url = `https://www.bizinfo.go.kr/uss/rss/bizinfoApi.do?crtfcKey=${API_KEY}&dataType=xml`;
-
-    // 👇 timeout 옵션 추가
-    const res = await axios.get(url, {
-      timeout: 7000,
-    });
-
+    const res = await axios.get(url, { timeout: 7000 });
     const parser = new XMLParser();
     const json = parser.parse(res.data);
 
     const items = json.rss?.channel?.item || [];
     console.log(`✅ API 호출 완료: ${items.length}건`);
 
-    return items.map(item => ({
-      policyNm: item.title,
-      policyCn: item.description,
-      jrsdInsttNm: item.author || item.insttNm || '',
-      pblancUrl: item.link,
-      score: calculateScore(item.title, item.description, item.author)
-    }));
+    return items
+      .map(item => ({
+        policyNm: item.title,
+        policyCn: item.description,
+        jrsdInsttNm: item.author || item.insttNm || '',
+        pblancUrl: item.link,
+      }))
+      .filter(item => isGyeongnamRelated(item.policyNm, item.policyCn, item.jrsdInsttNm));
+
   } catch (err) {
     console.error('❌ API 호출 실패:', err.message);
     return [];
   }
 }
 
-
-// ✅ 메일 발송
 async function sendEmail(data) {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -70,7 +54,7 @@ async function sendEmail(data) {
     },
   });
 
-  const recipient = process.env.RECIPIENT_EMAIL || 'pm@cmaru.com';
+  const recipient = process.env.RECIPIENT_EMAIL || process.env.MAIL_RECEIVER || 'pm@cmaru.com';
   console.log('📨 수신자 확인:', recipient);
 
   const htmlBody = data.length === 0
@@ -84,8 +68,7 @@ async function sendEmail(data) {
          ${data.map(n => `
            <li>
              <b>${removeEmoji(n.policyNm)}</b><br>
-             ${removeEmoji(n.jrsdInsttNm || '기관 미상')}<br>
-             점수: ${n.score}점<br>
+             ${removeEmoji(n.jrsdInsttNm)}<br>
              <a href="${n.pblancUrl || '#'}" target="_blank">공고 확인</a>
            </li>
          `).join('')}
@@ -107,7 +90,6 @@ async function sendEmail(data) {
   }
 }
 
-// ✅ 실행 흐름
 (async () => {
   const notices = await getNoticesFromAPI();
   fs.writeFileSync('./notices.json', JSON.stringify(notices, null, 2));
