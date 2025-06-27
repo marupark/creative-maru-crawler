@@ -1,4 +1,3 @@
-// ✅ MAILNARA v7.3 - index.js (최종 통합 버전)
 const fs = require('fs');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
@@ -6,7 +5,7 @@ const dotenv = require('dotenv');
 const { XMLParser } = require('fast-xml-parser');
 dotenv.config();
 
-// ✅ 1. 공고 수집 함수 (RSS API 기반)
+// ✅ 공고 수집 함수
 async function getNoticesFromAPI() {
   try {
     const API_KEY = process.env.BIZINFO_API_KEY;
@@ -25,13 +24,13 @@ async function getNoticesFromAPI() {
   }
 }
 
-// ✅ 2. 이모지 제거 함수
+// ✅ 이모지 제거 함수
 const removeEmoji = (text) => {
   if (!text || typeof text !== 'string') return '';
   return text.replace(/[\p{Emoji_Presentation}\p{Emoji}\uFE0F]/gu, '');
 };
 
-// ✅ 3. 메일 발송 함수
+// ✅ 메일 발송 함수
 async function sendEmail(data) {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -77,7 +76,7 @@ async function sendEmail(data) {
   }
 }
 
-// ✅ 4. 실행 흐름
+// ✅ 실행 흐름
 (async () => {
   const notices = await getNoticesFromAPI();
   fs.writeFileSync('./notices.json', JSON.stringify(notices, null, 2));
