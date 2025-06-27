@@ -1,36 +1,40 @@
+// index.js
+
 const fs = require('fs');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
-const dotenv = require('dotenv');
 const { XMLParser } = require('fast-xml-parser');
-dotenv.config();
+require('dotenv').config();
 
-// ✅ 공고 수집 함수
 async function getNoticesFromAPI() {
   try {
     const API_KEY = process.env.BIZINFO_API_KEY;
-    const url = `https://www.bizinfo.go.kr/uss/rss/bizinfoApi.do?crtfcKey=${API_KEY}&dataType=xml&searchCnt=80`;
+    const url = `https://www.bizinfo.go.kr/uss/rss/bizinfoApi.do?crtfcKey=${API_KEY}&dataType=xml`;
 
-    const res = await axios.get(url);
+    const res = await axios.get(url, { timeout: 10000 }); // ⏰ 타임아웃 추가
     const parser = new XMLParser();
     const json = parser.parse(res.data);
-    const items = json.rss?.channel?.item || [];
 
+    const items = json.rss?.channel?.item || [];
     console.log(`✅ API 호출 완료: ${items.length}건`);
-    return items;
+
+    return items.map(item => ({
+      policyNm: item.title,
+      policyCn: item.description,
+      jrsdInsttNm: item.author || item.insttNm || '',
+      pblancUrl: item.link
+    }));
   } catch (err) {
     console.error('❌ API 호출 실패:', err.message);
     return [];
   }
 }
 
-// ✅ 이모지 제거 함수
-const removeEmoji = (text) => {
+const removeEmoji = text => {
   if (!text || typeof text !== 'string') return '';
   return text.replace(/[\p{Emoji_Presentation}\p{Emoji}\uFE0F]/gu, '');
 };
 
-// ✅ 메일 발송 함수
 async function sendEmail(data) {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -53,9 +57,9 @@ async function sendEmail(data) {
        <ul>
          ${data.map(n => `
            <li>
-             <b>${removeEmoji(n.title)}</b><br>
-             ${removeEmoji(n.author || '기관 미상')}<br>
-             <a href="${n.link || '#'}" target="_blank">공고 확인</a>
+             <b>${removeEmoji(n.policyNm)}</b><br>
+             ${removeEmoji(n.jrsdInsttNm)}<br>
+             <a href="${n.pblancUrl}" target="_blank">공고 확인</a>
            </li>
          `).join('')}
        </ul>
@@ -76,15 +80,11 @@ async function sendEmail(data) {
   }
 }
 
-// ✅ 실행 흐름
+// 🧠 실행
 (async () => {
   const notices = await getNoticesFromAPI();
   fs.writeFileSync('./notices.json', JSON.stringify(notices, null, 2));
   console.log('📁 notices.json 저장 완료');
-
-  notices.forEach((n, i) => {
-    console.log(`[${i + 1}] ${removeEmoji(n.title)} | ${removeEmoji(n.author || '')}`);
-  });
 
   await sendEmail(notices);
 })();
