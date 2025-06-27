@@ -23,7 +23,7 @@ async function getNoticesFromAPI() {
   try {
     const API_KEY = process.env.BIZINFO_API_KEY;
     const url = `https://www.bizinfo.go.kr/uss/rss/bizinfoApi.do?crtfcKey=${API_KEY}&dataType=xml`;
-    const res = await axios.get(url, { timeout: 7000 });
+    const res = await axios.get(url, { timeout: 12000 });
     const parser = new XMLParser();
     const json = parser.parse(res.data);
 
