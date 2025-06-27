@@ -34,7 +34,12 @@ async function getNoticesFromAPI() {
   try {
     const API_KEY = process.env.BIZINFO_API_KEY;
     const url = `https://www.bizinfo.go.kr/uss/rss/bizinfoApi.do?crtfcKey=${API_KEY}&dataType=xml`;
-    const res = await axios.get(url);
+
+    // 👇 timeout 옵션 추가
+    const res = await axios.get(url, {
+      timeout: 7000,
+    });
+
     const parser = new XMLParser();
     const json = parser.parse(res.data);
 
@@ -53,6 +58,7 @@ async function getNoticesFromAPI() {
     return [];
   }
 }
+
 
 // ✅ 메일 발송
 async function sendEmail(data) {
