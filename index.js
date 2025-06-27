@@ -1,50 +1,36 @@
-// index.js 최종판 (경남 필터링 적용)
-
 const fs = require('fs');
 const axios = require('axios');
 const nodemailer = require('nodemailer');
+const dotenv = require('dotenv');
 const { XMLParser } = require('fast-xml-parser');
-require('dotenv').config();
+dotenv.config();
 
-// ✅ 경남 관련 키워드 리스트
-const regionKeywords = ['경남', '창원', '김해', '진주', '양산', '사천', '통영', '거제', '밀양', '함안', '거창', '산청', '의령'];
-
-function isGyeongnamRelated(title, content, agency) {
-  const text = `${title} ${content} ${agency}`;
-  return regionKeywords.some(keyword => text.includes(keyword));
-}
-
-const removeEmoji = text => {
-  if (!text || typeof text !== 'string') return '';
-  return text.replace(/[\p{Emoji_Presentation}\p{Emoji}\uFE0F]/gu, '');
-};
-
+// ✅ 공고 수집 함수
 async function getNoticesFromAPI() {
   try {
     const API_KEY = process.env.BIZINFO_API_KEY;
-    const url = `https://www.bizinfo.go.kr/uss/rss/bizinfoApi.do?crtfcKey=${API_KEY}&dataType=xml`;
-    const res = await axios.get(url, { timeout: 12000 });
+    const url = `https://www.bizinfo.go.kr/uss/rss/bizinfoApi.do?crtfcKey=${API_KEY}&dataType=xml&searchCnt=80`;
+
+    const res = await axios.get(url);
     const parser = new XMLParser();
     const json = parser.parse(res.data);
-
     const items = json.rss?.channel?.item || [];
+
     console.log(`✅ API 호출 완료: ${items.length}건`);
-
-    return items
-      .map(item => ({
-        policyNm: item.title,
-        policyCn: item.description,
-        jrsdInsttNm: item.author || item.insttNm || '',
-        pblancUrl: item.link,
-      }))
-      .filter(item => isGyeongnamRelated(item.policyNm, item.policyCn, item.jrsdInsttNm));
-
+    return items;
   } catch (err) {
     console.error('❌ API 호출 실패:', err.message);
     return [];
   }
 }
 
+// ✅ 이모지 제거 함수
+const removeEmoji = (text) => {
+  if (!text || typeof text !== 'string') return '';
+  return text.replace(/[\p{Emoji_Presentation}\p{Emoji}\uFE0F]/gu, '');
+};
+
+// ✅ 메일 발송 함수
 async function sendEmail(data) {
   const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -67,9 +53,9 @@ async function sendEmail(data) {
        <ul>
          ${data.map(n => `
            <li>
-             <b>${removeEmoji(n.policyNm)}</b><br>
-             ${removeEmoji(n.jrsdInsttNm)}<br>
-             <a href="${n.pblancUrl || '#'}" target="_blank">공고 확인</a>
+             <b>${removeEmoji(n.title)}</b><br>
+             ${removeEmoji(n.author || '기관 미상')}<br>
+             <a href="${n.link || '#'}" target="_blank">공고 확인</a>
            </li>
          `).join('')}
        </ul>
@@ -90,9 +76,15 @@ async function sendEmail(data) {
   }
 }
 
+// ✅ 실행 흐름
 (async () => {
   const notices = await getNoticesFromAPI();
   fs.writeFileSync('./notices.json', JSON.stringify(notices, null, 2));
   console.log('📁 notices.json 저장 완료');
+
+  notices.forEach((n, i) => {
+    console.log(`[${i + 1}] ${removeEmoji(n.title)} | ${removeEmoji(n.author || '')}`);
+  });
+
   await sendEmail(notices);
 })();
