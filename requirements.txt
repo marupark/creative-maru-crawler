@@ -1,7 +1,0 @@
-beautifulsoup4
-requests
-pandas
-python-dotenv
-openai
-gspread
-google-auth
