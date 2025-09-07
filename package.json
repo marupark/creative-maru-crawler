@@ -1,0 +1,16 @@
+{
+  "name": "auto-ai-orchestrator",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/orchestrator.js",
+  "scripts": {
+    "start": "node src/orchestrator.js",
+    "test-run": "node src/orchestrator.js --dry-run",
+    "lint": "echo \"(optional) add eslint\""
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "nodemailer": "^6.9.11",
+    "dayjs": "^1.11.13"
+  }
+}
