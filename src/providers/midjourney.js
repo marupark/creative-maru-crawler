@@ -1,9 +1,11 @@
 import axios from 'axios'
 import { log } from '../utils/logger.js'
 
-export async function generateMidjourneyImages({ webhook = process.env.MIDJOURNEY_WEBHOOK_URL, timeoutMs = 20000 } = {}) {
+export async function generateMidjourneyImages(
+  { webhook = process.env.MIDJOURNEY_WEBHOOK_URL, timeoutMs = 60000 } = {}
+) {
   if (!webhook) {
-    log('Midjourney webhook missing. Skipping image generation.')
+    log('Image proxy webhook missing. Skipping image generation.')
     return { skipped: true, images: [] }
   }
   try {
@@ -12,10 +14,23 @@ export async function generateMidjourneyImages({ webhook = process.env.MIDJOURNE
       promptB: "Creative dynamic report cover, blue+red palette, diagonal layout, abstract shapes, A4, 300dpi",
       promptThumb: "Q-Kit Business Template thumbnail, 16:9, modern presentation cover, clean layout"
     }
-    await axios.post(webhook, payload, { timeout: timeoutMs })
-    return { skipped: false, images: ["report_cover_A.jpg","report_cover_B.jpg","qkit_thumbnail.jpg"], note: "Webhook triggered. Images will be delivered by your proxy." }
+
+    const res = await axios.post(webhook, payload, {
+      timeout: timeoutMs,
+      headers: { "x-proxy-key": process.env.PROXY_API_KEY || "" }
+    })
+
+    const data = res?.data || {}
+    if (data.ok && Array.isArray(data.images) && data.images.length) {
+      // Worker → Replicate가 돌려준 실제 이미지 URL 사용
+      return { skipped: false, images: data.images, backend: data.backend || 'proxy' }
+    }
+
+    // 실패/빈 응답 시 안전하게 스킵
+    return { skipped: true, images: [], note: data.error || 'proxy returned no images' }
+
   } catch (e) {
-    log('Midjourney webhook error ' + (e?.response?.data ? JSON.stringify(e.response.data) : e?.message))
+    log('Image proxy error ' + (e?.response?.data ? JSON.stringify(e.response.data) : e?.message))
     return { skipped: true, images: [] }
   }
 }
